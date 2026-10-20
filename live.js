@@ -220,6 +220,89 @@
   var milair = makeFleet("milair", "/api/milair", 0xff5a5a, 4.5);
   setInterval(function () { planes.place(); milair.place(); }, 250);
 
+  // ------------------------------------------------------------ uydular (CelesTrak + SGP4, tarayıcıda)
+  var SAT_COLORS = { starlink: 0x9fb4ff, oneweb: 0xc3a6ff, gnss: 0x6dffb0, geo: 0xffd36b, station: 0xff6bf0, other: 0x7ee6ff };
+  var satDot = (function () {
+    var c = document.createElement("canvas");
+    c.width = c.height = 32;
+    var x = c.getContext("2d"), g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+    g.addColorStop(0, "rgba(255,255,255,1)");
+    g.addColorStop(0.4, "rgba(255,255,255,0.85)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = g; x.fillRect(0, 0, 32, 32);
+    return new THREE.CanvasTexture(c);
+  })();
+  var sats = { recs: null, points: null, timer: null, loading: null };
+
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement("script");
+      s.src = src; s.onload = res; s.onerror = function () { rej(new Error(src)); };
+      document.body.appendChild(s);
+    });
+  }
+  // Yüksek yörüngeler (GPS ~20.000 km, GEO ~36.000 km) gerçek ölçekte kameranın
+  // arkasında kalır; 2.000 km üstü logaritmik sıkıştırılır.
+  function satAlt(km) {
+    var d = km / 6371;
+    return d < 0.3 ? d : 0.3 + Math.log(d / 0.3) * 0.35;
+  }
+  function loadSats() {
+    if (sats.loading) return sats.loading;
+    sats.loading = Promise.all([
+      window.satellite ? Promise.resolve() : loadScript("https://cdn.jsdelivr.net/npm/satellite.js@6.0.2/dist/satellite.min.js"),
+      fetch("/api/sats").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    ]).then(function (res) {
+      var j = res[1], S = window.satellite, recs = [];
+      j.s.forEach(function (x) {
+        try { recs.push({ rec: S.twoline2satrec(x[1], x[2]), cat: x[3], name: x[0] }); } catch (e) { /* bozuk kayıt */ }
+      });
+      sats.recs = recs;
+      counts.sats = recs.length;
+      var n = recs.length, geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+      var col = new Float32Array(n * 3), c = new THREE.Color();
+      recs.forEach(function (r, i) { c.set(SAT_COLORS[r.cat] || SAT_COLORS.other); col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; });
+      geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+      sats.points = new THREE.Points(geo, new THREE.PointsMaterial({
+        size: 1.1, map: satDot, vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: true
+      }));
+      sats.points.raycast = function () {};
+      sats.points.renderOrder = 13;
+      globe.scene().add(sats.points);
+      notify();
+    }).catch(function (e) {
+      counts.sats = null; sats.loading = null; console.warn("uydular", e); notify();
+    });
+    return sats.loading;
+  }
+  function placeSats() {
+    if (!sats.points || !on.sats) return;
+    var S = window.satellite, now = new Date(), gmst = S.gstime(now);
+    var pos = sats.points.geometry.attributes.position.array;
+    for (var i = 0; i < sats.recs.length; i++) {
+      var p = null;
+      try { p = S.propagate(sats.recs[i].rec, now).position; } catch (e) { p = null; }
+      if (!p || isNaN(p.x)) { pos[i * 3] = pos[i * 3 + 1] = pos[i * 3 + 2] = 0; continue; }   // merkeze gizle
+      var g = S.eciToGeodetic(p, gmst);
+      var c = globe.getCoords(S.degreesLat(g.latitude), S.degreesLong(g.longitude), satAlt(g.height));
+      pos[i * 3] = c.x; pos[i * 3 + 1] = c.y; pos[i * 3 + 2] = c.z;
+    }
+    sats.points.geometry.attributes.position.needsUpdate = true;
+    sats.points.geometry.computeBoundingSphere();
+  }
+  function setSats(v) {
+    clearInterval(sats.timer);
+    if (sats.points) sats.points.visible = v;
+    if (!v) return;
+    loadSats().then(function () {
+      if (!on.sats || !sats.points) return;
+      sats.points.visible = true;
+      placeSats();
+      sats.timer = setInterval(placeSats, 2000);
+    });
+  }
+
   // ------------------------------------------------------------ depremler + ISS (globe.gl nokta katmanı)
   var quakes = [], iss = null, quakeTimer = null, issTimer = null;
   function pointData() {
@@ -275,13 +358,14 @@
 
   // ------------------------------------------------------------ dışa açık
   window.LiveLayers = {
-    ids: ["daynight", "planes", "milair", "quakes", "iss"],
+    ids: ["daynight", "planes", "milair", "sats", "quakes", "iss"],
     count: function (id) { return counts[id]; },
     set: function (id, v) {
       on[id] = v;
       if (id === "daynight") setNight(v);
       if (id === "planes") planes.set(v);
       if (id === "milair") milair.set(v);
+      if (id === "sats") setSats(v);
       if (id === "quakes") {
         clearInterval(quakeTimer);
         if (v) { loadQuakes(); quakeTimer = setInterval(loadQuakes, 5 * 60000); }

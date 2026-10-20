@@ -14,6 +14,7 @@
     { id: "daynight", key: "layerDayNight", on: false, live: true },
     { id: "planes", key: "layerPlanes", on: false, live: true },
     { id: "milair", key: "layerMilAir", on: false, live: true },
+    { id: "sats", key: "layerSats", on: false, live: true },
     { id: "quakes", key: "layerQuakes", on: false, live: true },
     { id: "iss", key: "layerISS", on: false, live: true },
     { id: "clouds", key: "layerClouds", on: false },
@@ -52,6 +53,12 @@
       }
       h += '<label class="ly-row"><input type="checkbox" data-id="' + l.id + '"' + (on[l.id] ? " checked" : "") +
         "><span>" + esc(t(l.key)) + "</span>" + (cnt ? '<em class="ly-cnt">' + esc(cnt) + "</em>" : "") + "</label>";
+      if (l.id === "sats" && on.sats) {
+        h += '<div class="ly-scale ly-legend">' + [["#9fb4ff", "satStarlink"], ["#6dffb0", "satGnss"], ["#ffd36b", "satGeo"],
+          ["#ff6bf0", "satStation"], ["#7ee6ff", "satOther"]].map(function (x) {
+            return '<span><i style="background:' + x[0] + '"></i>' + esc(t(x[1])) + "</span>";
+          }).join("") + '<div class="ly-note">' + esc(t("satNote")) + "</div></div>";
+      }
       if (l.id === "temp" && on.temp) {
         h += '<div class="ly-scale"><div class="ly-bar temp" dir="ltr"></div><div class="ly-ticks" dir="ltr"><span>−40°</span><span>0°</span><span>+40°C</span></div></div>';
       }
@@ -378,7 +385,7 @@
   // ------------------------------------------------------------ açılış
   if (!THREE) {
     LAYERS = LAYERS.filter(function (l) { return ["scores", "military", "labels"].indexOf(l.id) >= 0; });
-    ["daynight", "planes", "milair", "quakes", "iss"].forEach(function (k) { on[k] = false; });
+    ["daynight", "planes", "milair", "sats", "quakes", "iss"].forEach(function (k) { on[k] = false; });
     ["clouds", "precip", "temp", "wind"].forEach(function (k) { on[k] = false; });
   }
   if (MOBILE) document.getElementById("layers-box").removeAttribute("open");

@@ -1,0 +1,33 @@
+name: Uydular
+
+on:
+  workflow_dispatch:
+  # Günde bir kez (CelesTrak verisi birkaç saatte bir güncellenir)
+  schedule:
+    - cron: "25 2 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  sats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - name: CelesTrak yörünge verisini çek
+        run: |
+          mkdir -p /tmp/sats
+          python scripts/fetch_sats.py /tmp/sats/sats.json
+      # Geçmişi tutulmayan "sats" dalına tek commit (depo büyümez)
+      - name: sats dalına yaz
+        run: |
+          cd /tmp/sats
+          git init -q -b sats
+          git config user.name "dunya-haritasi-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add sats.json
+          git commit -q -m "Uydular $(date -u +%Y-%m-%d)"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" sats

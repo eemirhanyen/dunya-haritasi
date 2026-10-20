@@ -60,6 +60,10 @@ html, body {
 .ly-row input { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; cursor: pointer; }
 .ly-scale { margin: 2px 0 6px 24px; }
 [dir="rtl"] .ly-scale { margin: 2px 24px 6px 0; }
+.ly-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; color: var(--muted); }
+.ly-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.ly-legend i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.ly-legend .ly-note { flex-basis: 100%; margin-top: 2px; }
 .ly-bar { height: 6px; border-radius: 3px; }
 .ly-bar.temp { background: linear-gradient(90deg, rgb(120,60,200), rgb(60,110,230) 25%, rgb(120,200,230) 50%, rgb(90,200,120) 62.5%, rgb(240,220,80) 75%, rgb(245,140,50) 87.5%, rgb(210,40,60)); }
 .ly-bar.precip { background: linear-gradient(90deg, rgba(90,170,255,.5), rgb(60,140,255), rgb(140,90,255), rgb(230,60,200)); }
