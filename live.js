@@ -276,11 +276,17 @@
     });
     return sats.loading;
   }
-  function placeSats() {
+  // ~16.000 uydunun hepsini tek seferde hesaplamak zayıf cihazda takılma yapar:
+  // her 250 ms'de 1/8'i hesaplanır, her uydu ~2 sn'de bir güncellenir.
+  var SAT_SLICES = 8, satSlice = 0;
+  function placeSats(all) {
     if (!sats.points || !on.sats) return;
     var S = window.satellite, now = new Date(), gmst = S.gstime(now);
     var pos = sats.points.geometry.attributes.position.array;
-    for (var i = 0; i < sats.recs.length; i++) {
+    var n = sats.recs.length, per = Math.ceil(n / SAT_SLICES);
+    var from = all ? 0 : satSlice * per, to = all ? n : Math.min(n, from + per);
+    satSlice = (satSlice + 1) % SAT_SLICES;
+    for (var i = from; i < to; i++) {
       var p = null;
       try { p = S.propagate(sats.recs[i].rec, now).position; } catch (e) { p = null; }
       if (!p || isNaN(p.x)) { pos[i * 3] = pos[i * 3 + 1] = pos[i * 3 + 2] = 0; continue; }   // merkeze gizle
@@ -298,8 +304,8 @@
     loadSats().then(function () {
       if (!on.sats || !sats.points) return;
       sats.points.visible = true;
-      placeSats();
-      sats.timer = setInterval(placeSats, 2000);
+      placeSats(true);
+      sats.timer = setInterval(function () { placeSats(false); }, 250);
     });
   }
 
