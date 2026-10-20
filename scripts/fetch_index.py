@@ -31,7 +31,10 @@ import time
 import urllib.error
 import urllib.request
 
+# Bu ülkeler skorlanamazsa betik durur (kaynak bozulmasının işareti).
 FEATURED = ["TUR", "GRC", "ISR"]
+# Skorlanan ülke sayısı bunun altına düşerse betik durur.
+MIN_SCORED = 120
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_PATH = os.path.join(ROOT, "data", "countries.json")
@@ -120,7 +123,7 @@ def wb_countries():
     out = {}
     for c in data[1]:
         if c["region"]["id"] != "NA":  # NA = bölge/gelir grubu toplamı
-            out[c["id"]] = c["name"]
+            out[c["id"]] = {"name": c["name"], "iso2": c["iso2Code"]}
     return out
 
 
@@ -308,10 +311,9 @@ def main():
     }
 
     result = {}
-    errors = []
-    for iso in FEATURED:
-        entry = {"iso3": iso, "name": countries.get(iso, iso), "dimensions": {}, "demographics": {}}
-        dim_scores = []
+    for iso in sorted(universe):
+        entry = {"iso3": iso, "iso2": countries[iso]["iso2"], "name": countries[iso]["name"], "dimensions": {}, "demographics": {}}
+        dim_scores, missing = [], []
         for dk, d in dims.items():
             parts = []
             for code in d["parts"]:
@@ -323,7 +325,7 @@ def main():
                         "percentile": round(pct[code][iso], 1),
                     })
             if len(parts) < d["min_parts"]:
-                errors.append(f"{iso}: '{d['label']}' boyutu için yeterli veri yok ({len(parts)}/{len(d['parts'])})")
+                missing.append(d["label"])
                 continue
             score = mean(p["percentile"] for p in parts)
             dim_scores.append(score)
@@ -335,24 +337,30 @@ def main():
             if code in demo_raw and iso in demo_raw[code]:
                 v, y = demo_raw[code][iso]
                 entry["demographics"][code] = {"label": label, "value": v, "year": y}
-        if len(dim_scores) == len(dims):
+        # Skor yalnızca beş boyutun hepsi varsa hesaplanır; eksik boyutla
+        # hesaplamak ülkeyi diğerleriyle karşılaştırılamaz hale getirir.
+        if missing:
+            entry["index_score"] = None
+            entry["missing"] = missing
+        else:
             entry["index_score"] = round(mean(dim_scores), 1)
-            entry["ai_score"] = None          # 2. aşamada eklenecek
-            entry["final_score"] = entry["index_score"]
+        entry["ai_score"] = None
+        entry["final_score"] = entry["index_score"]
         result[iso] = entry
 
-    if errors:
-        for e in errors:
-            log("HATA: " + e)
-        log("Eksik veri var, data/countries.json güncellenmedi.")
+    scored = [iso for iso, e in result.items() if e["index_score"] is not None]
+    log(f"Skorlanan ülke: {len(scored)} / {len(result)}")
+    bad = [iso for iso in FEATURED if result.get(iso, {}).get("index_score") is None]
+    if bad or len(scored) < MIN_SCORED:
+        log(f"HATA: eksik veri (öncelikli ülkeler: {bad}, skorlanan: {len(scored)} < {MIN_SCORED}?). "
+            "Kaynaklardan biri bozulmuş olabilir; data/countries.json güncellenmedi.")
         sys.exit(1)
 
     out = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "method": {
             "description": "Her gösterge dünya genelinde yüzdelik dilime çevrilir (50 = dünya ortası). "
-                           "Beş boyut eşit ağırlıklıdır. Şu an skor yalnızca endeks yarısıdır; "
-                           "AI değerlendirmesi ikinci aşamada eklenecek.",
+                           "Beş boyut eşit ağırlıklıdır. Beş boyutun hepsinde verisi olmayan ülke skorlanmaz.",
             "weights": {"index": 1.0, "ai": 0.0},
             "planned_weights": {"index": 0.5, "ai": 0.5},
             "thresholds": {"red_below": 33.3, "green_from": 66.7},
@@ -365,11 +373,14 @@ def main():
     }
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     with open(OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
+        json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     log(f"Yazıldı: {OUT_PATH}")
-    for iso, e in result.items():
+    for iso in FEATURED:
+        e = result[iso]
         dims_txt = ", ".join(f"{d['label']} {d['score']}" for d in e["dimensions"].values())
         log(f"  {iso} {e['index_score']} | {dims_txt}")
+    no = sorted((iso, e["missing"]) for iso, e in result.items() if e.get("missing"))
+    log(f"Skorlanamayan {len(no)} ülke: " + "; ".join(f"{i} ({', '.join(m)})" for i, m in no))
 
 
 if __name__ == "__main__":

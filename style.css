@@ -43,6 +43,11 @@ html, body {
   font-size: 12.5px;
   backdrop-filter: blur(8px);
 }
+.legend { width: 230px; }
+.grad-title { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.grad { height: 10px; border-radius: 5px; background: linear-gradient(90deg, #ef5350 0%, #f2c94c 50%, #34c77b 100%); }
+.grad-ticks { display: flex; justify-content: space-between; margin: 5px 0 8px; font: 500 11px "JetBrains Mono", monospace; color: var(--muted); text-align: center; line-height: 1.3; }
+.grad-ticks em { font: 400 10.5px Inter, system-ui, sans-serif; font-style: normal; }
 .legend-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
 .legend-row small { color: var(--muted); margin-left: auto; padding-left: 12px; font-family: "JetBrains Mono", monospace; font-size: 11px; }
 .legend-row.muted { color: var(--muted); }
@@ -145,7 +150,7 @@ h3 {
 
 @media (max-width: 640px) {
   .brand { top: 14px; left: 16px; }
-  .legend { left: 12px; bottom: 12px; font-size: 11.5px; padding: 10px 12px; }
+  .legend { left: 12px; bottom: 12px; font-size: 11.5px; padding: 10px 12px; width: 190px; }
   .legend-row small { display: none; }
   .hint { bottom: auto; top: 70px; }
   .panel {

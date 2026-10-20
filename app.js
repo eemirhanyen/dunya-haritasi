@@ -2,8 +2,11 @@
 (function () {
   "use strict";
 
-  var TR_NAMES = { TUR: "Türkiye", GRC: "Yunanistan", ISR: "İsrail" };
   var COLORS = { good: "#34c77b", mid: "#f2c94c", bad: "#ef5350", none: "#2a3347" };
+  // Kademeli renk: 0 kırmızı, 50 sarı (dünya ortası), 100 yeşil
+  var STOPS = [[0, [239, 83, 80]], [50, [242, 201, 76]], [100, [52, 199, 123]]];
+  var regionNames = null;
+  try { regionNames = new Intl.DisplayNames(["tr"], { type: "region" }); } catch (e) { /* eski tarayıcı */ }
 
   var state = { data: null, geo: null, selected: null, hover: null };
   var nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1 });
@@ -25,11 +28,28 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  function scoreColor(score, alpha) {
+    if (score == null) return alpha == null ? COLORS.none : hexAlpha(COLORS.none, alpha);
+    var s = Math.max(0, Math.min(100, score)), i = s <= 50 ? 0 : 1;
+    var a = STOPS[i], b = STOPS[i + 1], t = (s - a[0]) / (b[0] - a[0]);
+    var c = [0, 1, 2].map(function (k) { return Math.round(a[1][k] + (b[1][k] - a[1][k]) * t); });
+    return "rgba(" + c.join(",") + "," + (alpha == null ? 1 : alpha) + ")";
+  }
   function countryOf(feat) {
     return state.data && state.data.countries[feat.properties.iso] || null;
   }
+  function scoredOf(feat) {
+    var c = countryOf(feat);
+    return c && c.final_score != null ? c : null;
+  }
+  function trName(c, fallback) {
+    if (c && c.iso2 && regionNames) {
+      try { var n = regionNames.of(c.iso2); if (n && n !== c.iso2) return n; } catch (e) { /* yok */ }
+    }
+    return (c && c.name) || fallback;
+  }
   function nameOf(feat) {
-    return TR_NAMES[feat.properties.iso] || feat.properties.name;
+    return trName(countryOf(feat), feat.properties.name);
   }
   function hexAlpha(hex, a) {
     var n = parseInt(hex.slice(1), 16);
@@ -56,22 +76,21 @@
       .polygonAltitude(function (f) {
         if (f === state.selected) return 0.04;
         if (f === state.hover && countryOf(f)) return 0.025;
-        return countryOf(f) ? 0.012 : 0.006;
+        return scoredOf(f) ? 0.012 : 0.006;
       })
       .polygonCapColor(function (f) {
-        var c = countryOf(f);
-        if (!c) return f === state.hover ? "#334061" : COLORS.none;
-        var col = COLORS[band(c.final_score, state.data.method.thresholds)];
-        return f === state.hover || f === state.selected ? col : hexAlpha(col, 0.88);
+        var c = scoredOf(f);
+        if (!c) return f === state.hover && countryOf(f) ? "#3a4766" : COLORS.none;
+        return scoreColor(c.final_score, f === state.hover || f === state.selected ? 1 : 0.9);
       })
       .polygonSideColor(function (f) {
-        var c = countryOf(f);
-        return c ? hexAlpha(COLORS[band(c.final_score, state.data.method.thresholds)], 0.35) : "rgba(20,28,45,0.6)";
+        var c = scoredOf(f);
+        return c ? scoreColor(c.final_score, 0.35) : "rgba(20,28,45,0.6)";
       })
       .polygonStrokeColor(function () { return "rgba(7,11,20,0.9)"; })
       .polygonLabel(function (f) {
         var c = countryOf(f);
-        var s = c ? " · <b>" + nf.format(c.final_score) + "</b>" : "";
+        var s = c && c.final_score != null ? " · <b>" + nf.format(c.final_score) + "</b>" : (c ? " · veri yetersiz" : "");
         return '<div class="tip">' + esc(nameOf(f)) + s + "</div>";
       })
       .onPolygonHover(function (f) {
@@ -161,16 +180,23 @@
   function renderPanel(c) {
     var th = state.data.method.thresholds;
     var b = band(c.final_score, th);
-    var name = TR_NAMES[c.iso3] || c.name;
+    var name = trName(c, c.name);
     var h = "";
 
     h += '<div class="p-head">';
-    h += '<div class="p-score" style="background:' + COLORS[b] + '">' + nf0.format(c.final_score) + "</div>";
-    h += '<div><h2 class="p-name">' + esc(name) + '</h2><div class="p-verdict">' + verdict(b) + "</div></div>";
+    h += '<div class="p-score" style="background:' + scoreColor(c.final_score) + '">' +
+      (c.final_score == null ? "–" : nf0.format(c.final_score)) + "</div>";
+    h += '<div><h2 class="p-name">' + esc(name) + '</h2><div class="p-verdict">' +
+      (c.final_score == null ? "Veri yetersiz" : verdict(b)) + "</div></div>";
     h += "</div>";
 
+    if (c.missing && c.missing.length) {
+      h += '<div class="note" style="margin:0 0 18px">Skor hesaplanmadı: şu boyutlarda güncel veri yok — ' +
+        esc(c.missing.join(", ")) + ". Ülkeler arası adil karşılaştırma için skor yalnızca beş boyutun hepsi varsa hesaplanır.</div>";
+    }
+
     h += '<div class="split">';
-    h += '<div><div class="k">Endeks</div><div class="v">' + nf.format(c.index_score) + "</div></div>";
+    h += '<div><div class="k">Endeks</div><div class="v">' + (c.index_score == null ? "–" : nf.format(c.index_score)) + "</div></div>";
     h += '<div><div class="k">AI değerlendirmesi</div><div class="v pending">' +
       (c.ai_score == null ? "Yakında" : nf.format(c.ai_score)) + "</div></div>";
     h += "</div>";
@@ -178,7 +204,7 @@
     h += "<h3>Boyutlar · dünya yüzdelik dilimi</h3>";
     Object.keys(c.dimensions).forEach(function (k) {
       var d = c.dimensions[k];
-      var col = COLORS[band(d.score, th)];
+      var col = scoreColor(d.score);
       h += '<details class="dim"><summary>';
       h += '<div class="dim-top"><span>' + esc(d.label) + "</span><b>" + nf.format(d.score) + "</b></div>";
       h += '<div class="bar"><i style="width:' + d.score + "%;background:" + col + '"></i></div>';
