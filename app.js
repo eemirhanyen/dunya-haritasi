@@ -202,9 +202,24 @@
 
     h += '<div class="split">';
     h += '<div><div class="k">Endeks</div><div class="v">' + (c.index_score == null ? "–" : nf.format(c.index_score)) + "</div></div>";
-    h += '<div><div class="k">AI değerlendirmesi</div><div class="v pending">' +
-      (c.ai_score == null ? "Yakında" : nf.format(c.ai_score)) + "</div></div>";
+    h += '<div><div class="k">AI · ' + (c.ai ? c.ai.days + " gün ort." : "7 gün ort.") + '</div><div class="v' +
+      (c.ai_score == null ? ' pending">Henüz yok' : '">' + nf.format(c.ai_score)) + "</div></div>";
     h += "</div>";
+
+    if (c.ai && c.ai.latest) {
+      var L = c.ai.latest;
+      h += "<h3>AI değerlendirmesi · " + esc(fmtDate(L.date)) + "</h3>";
+      h += '<div class="ai">';
+      h += '<div class="ai-top"><span class="chip" style="background:' + scoreColor(L.score) + '">' + L.score + "</span>" +
+        "<span>Bugünkü puan" + (L.confidence ? " · güven: " + esc(L.confidence) : "") + "</span>" + spark(c.ai.series) + "</div>";
+      h += '<p class="ai-sum">' + esc(L.summary || "") + "</p>";
+      if (L.drivers && L.drivers.length) {
+        h += '<ul class="ai-drv">' + L.drivers.map(function (d) { return "<li>" + esc(d) + "</li>"; }).join("") + "</ul>";
+      }
+      h += '<div class="src">' + (L.headlines || 0) + " haber başlığı ve borsa verisi üzerinden, Claude tarafından üretildi. " +
+        "Son skorun %50'si bu puanın 7 günlük ortalamasıdır.</div>";
+      h += "</div>";
+    }
 
     h += "<h3>Boyutlar · dünya yüzdelik dilimi</h3>";
     Object.keys(c.dimensions).forEach(function (k) {
@@ -234,8 +249,7 @@
       h += "</div>";
     }
 
-    h += "<h3>Haberler ve borsa</h3>";
-    h += '<div class="note" style="margin-top:0">Son dakika haberleri, borsa endeksi ve AI değerlendirmesi ikinci aşamada eklenecek.</div>';
+    h += '<div id="live"><h3>Haberler ve borsa</h3><div class="note" style="margin-top:0">Yükleniyor…</div></div>';
 
     h += '<div class="note">Her gösterge tüm ülkeler arasında yüzdelik dilime çevrilir; 50 dünya ortasıdır, çubuktaki ince çizgi bu noktayı gösterir. ' +
       "Beş boyut eşit ağırlıklıdır. Yargı ve medya puanları kaynak kuruluşların değerlendirmesidir. " +
@@ -243,6 +257,93 @@
 
     document.getElementById("panel-body").innerHTML = h;
     document.getElementById("panel").scrollTop = 0;
+    loadNews().then(function (news) {
+      if (state.selected && countryOf(state.selected) === c) renderLive(c, news);
+    });
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso.length === 10 ? iso + "T12:00:00Z" : iso);
+    return d.toLocaleDateString("tr-TR", { day: "numeric", month: "long" });
+  }
+  function ago(iso) {
+    if (!iso) return "";
+    var h = Math.round((Date.now() - new Date(iso).getTime()) / 3600000);
+    if (h < 1) return "az önce";
+    if (h < 24) return h + " sa önce";
+    return Math.round(h / 24) + " gün önce";
+  }
+  function spark(series, w, hgt, color) {
+    // series: [{score}] veya sayı dizisi
+    var v = (series || []).map(function (x) { return typeof x === "number" ? x : x.score; });
+    if (v.length < 2) return "";
+    w = w || 90; hgt = hgt || 26;
+    var min = Math.min.apply(null, v), max = Math.max.apply(null, v), r = max - min || 1;
+    var pts = v.map(function (y, i) {
+      return (i * (w - 2) / (v.length - 1) + 1).toFixed(1) + "," + (hgt - 2 - (y - min) / r * (hgt - 4)).toFixed(1);
+    }).join(" ");
+    return '<svg class="spark" width="' + w + '" height="' + hgt + '" viewBox="0 0 ' + w + " " + hgt + '" aria-hidden="true">' +
+      '<polyline fill="none" stroke="' + (color || "#7aa2ff") + '" stroke-width="1.6" stroke-linejoin="round" points="' + pts + '"/></svg>';
+  }
+  function pct(x) {
+    if (x == null) return '<span class="muted">–</span>';
+    var cls = x > 0 ? "up" : x < 0 ? "down" : "";
+    return '<span class="' + cls + '">' + (x > 0 ? "+" : "") + nf2.format(x) + "%</span>";
+  }
+
+  var newsPromise = null;
+  function loadNews() {
+    if (!newsPromise) {
+      newsPromise = fetch("data/news.json?t=" + Math.floor(Date.now() / 3600000))
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; });
+    }
+    return newsPromise;
+  }
+
+  function renderLive(c, news) {
+    var box = document.getElementById("live");
+    if (!box) return;
+    var n = news && news.countries && news.countries[c.iso3];
+    var h = "";
+    if (n && n.market) {
+      var m = n.market, up = (m.chg_1m || 0) >= 0;
+      h += "<h3>Borsa</h3>";
+      h += '<div class="mkt"><div><div class="mkt-name">' + esc(m.name) + '</div><div class="mkt-last">' +
+        nf2.format(m.last) + " " + esc(m.currency || "") + "</div></div>" +
+        spark(m.spark, 110, 34, up ? "#34c77b" : "#ef5350") + "</div>";
+      h += '<div class="mkt-chg"><span>1 gün ' + pct(m.chg_1d) + "</span><span>1 hafta " + pct(m.chg_1w) +
+        "</span><span>1 ay " + pct(m.chg_1m) + "</span></div>";
+      h += '<div class="src">' + esc(fmtDate(m.as_of)) + " kapanışı · Yahoo Finance</div>";
+    }
+    if (n && (n.local.length || n.intl.length)) {
+      h += "<h3>Son 72 saatin haberleri</h3>";
+      h += '<div class="tabs" role="tablist"><button class="on" data-k="intl">Uluslararası</button><button data-k="local">Yerel medya</button></div>';
+      h += '<ul class="news" data-k="intl">' + newsList(n.intl) + "</ul>";
+      h += '<ul class="news" data-k="local" hidden>' + newsList(n.local) + "</ul>";
+      h += '<div class="src">' + (n.stale ? "Bugün güncellenemedi, önceki günün haberleri gösteriliyor. " : "") +
+        'Kaynak: <a href="https://www.gdeltproject.org/" target="_blank" rel="noopener">GDELT Project</a></div>';
+    } else if (c.final_score != null) {
+      h += "<h3>Haberler</h3><div class=\"note\" style=\"margin-top:0\">Bu ülke için henüz haber verisi yok.</div>";
+    }
+    box.innerHTML = h;
+    var tabs = box.querySelectorAll(".tabs button");
+    Array.prototype.forEach.call(tabs, function (b) {
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(tabs, function (x) { x.classList.toggle("on", x === b); });
+        Array.prototype.forEach.call(box.querySelectorAll("ul.news"), function (u) { u.hidden = u.dataset.k !== b.dataset.k; });
+      });
+    });
+  }
+
+  function newsList(items) {
+    if (!items || !items.length) return '<li class="muted">Haber yok.</li>';
+    return items.slice(0, 12).map(function (a) {
+      var url = /^https?:\/\//.test(a.url || "") ? a.url : "#";
+      return '<li><a href="' + esc(url) + '" target="_blank" rel="noopener nofollow">' + esc(a.title) + "</a>" +
+        '<span class="meta">' + esc(a.domain || "") + " · " + esc(ago(a.time)) + "</span></li>";
+    }).join("");
   }
 
   // ------------------------------------------------------------ açılış

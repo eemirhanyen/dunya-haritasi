@@ -3,7 +3,7 @@
 Endeks skoru üretici.
 
 Beş boyutun verisini resmi kaynaklardan çeker, her göstergeyi dünya
-genelinde yüzdelik dilime (0-100) çevirir ve data/countries.json dosyasını
+genelinde yüzdelik dilime (0-100) çevirir ve data/index.json dosyasını
 yazar. Yüzdelik dilim 50 = dünya ortası demektir.
 
 Boyutlar (eşit ağırlık):
@@ -15,7 +15,7 @@ Boyutlar (eşit ağırlık):
   5. Medya            RSF Dünya Basın Özgürlüğü Endeksi
 
 Herhangi bir öne çıkan ülke için bir boyut eksik kalırsa betik hata verir ve
-mevcut veri dosyasının üzerine yazmaz.
+mevcut veri dosyasının üzerine yazmaz. Çıktı: data/index.json.
 
 Yalnızca Python standart kütüphanesi kullanır.
 """
@@ -37,7 +37,7 @@ FEATURED = ["TUR", "GRC", "ISR"]
 MIN_SCORED = 120
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_PATH = os.path.join(ROOT, "data", "countries.json")
+OUT_PATH = os.path.join(ROOT, "data", "index.json")
 
 UA = {"User-Agent": "dunya-haritasi/1.0 (+https://github.com/eemirhanyen/dunya-haritasi)"}
 
@@ -353,7 +353,7 @@ def main():
     bad = [iso for iso in FEATURED if result.get(iso, {}).get("index_score") is None]
     if bad or len(scored) < MIN_SCORED:
         log(f"HATA: eksik veri (öncelikli ülkeler: {bad}, skorlanan: {len(scored)} < {MIN_SCORED}?). "
-            "Kaynaklardan biri bozulmuş olabilir; data/countries.json güncellenmedi.")
+            "Kaynaklardan biri bozulmuş olabilir; data/index.json güncellenmedi.")
         sys.exit(1)
 
     out = {
@@ -361,8 +361,6 @@ def main():
         "method": {
             "description": "Her gösterge dünya genelinde yüzdelik dilime çevrilir (50 = dünya ortası). "
                            "Beş boyut eşit ağırlıklıdır. Beş boyutun hepsinde verisi olmayan ülke skorlanmaz.",
-            "weights": {"index": 1.0, "ai": 0.0},
-            "planned_weights": {"index": 0.5, "ai": 0.5},
             "thresholds": {"red_below": 33.3, "green_from": 66.7},
             "inflation_target": INFLATION_TARGET,
             "universe_size": len(universe),
