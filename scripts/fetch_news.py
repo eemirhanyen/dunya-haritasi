@@ -28,6 +28,7 @@ import datetime as dt
 import html
 import io
 import json
+import math
 import os
 import re
 import sys
@@ -52,7 +53,6 @@ DOMAINS_URL = ("http://data.gdeltproject.org/blog/2018-news-outlets-by-country-m
 HOURS = int(os.environ.get("NEWS_HOURS", "24"))
 MIN_MENTIONS = 3          # ana ülke değilse en az bu kadar geçmeli
 KEEP_PER_SOURCE = 25
-CANDIDATES = 400          # ülke başına sıralamaya giren aday sayısı
 WORKERS = 8
 
 TITLE_RE = re.compile(r"<PAGE_TITLE>(.*?)</PAGE_TITLE>", re.S)
@@ -154,11 +154,27 @@ def clean_title(t):
     return t2 if len(t2) >= 15 else t
 
 
+TR_MOJIBAKE = str.maketrans({"þ": "ş", "ý": "ı", "ð": "ğ", "Þ": "Ş", "Ý": "İ", "Ð": "Ğ"})
+
+
+def fix_title(title, lang):
+    # Bazı Türkçe siteler GDELT'te yanlış kod sayfasıyla okunuyor (soruþturmasý -> soruşturması)
+    if lang == "tur":
+        title = title.translate(TR_MOJIBAKE)
+    return clean_title(title)[:300]
+
+
 def collect(targets_fips, fips_to_iso, dom_map, iso2_to_fips):
-    """Ülke başına aday haberler ve ton istatistikleri."""
-    cand = defaultdict(list)            # iso -> [(puan, kayıt)]
-    tone_sum, tone_n = defaultdict(float), defaultdict(int)
+    """Ülke başına aday haberler ve ton istatistikleri.
+
+    İki geçiş: önce tüm haberler okunur ve alan adı istatistikleri çıkarılır
+    (listede olmayan alan adının hangi ülkenin yayını olduğu, alan adının
+    büyüklüğü); sonra haberler ülkelere atanıp sıralanır.
+    """
+    records = []
     seen_url = set()
+    dom_total = defaultdict(int)                       # alan adı -> haber sayısı
+    dom_primary = defaultdict(lambda: defaultdict(int))  # alan adı -> ana ülke -> sayı
     stamps = slots(HOURS)
     jobs = [(s, k) for s in stamps for k in ("en", "tr")]
     ok_files = 0
@@ -172,37 +188,57 @@ def collect(targets_fips, fips_to_iso, dom_map, iso2_to_fips):
                 if url in seen_url:
                     continue
                 seen_url.add(url)
-                top = max(counts.values())
-                src = dom_map.get(domain)
-                if not src:
-                    tld = domain.rsplit(".", 1)[-1]
-                    src = iso2_to_fips.get("GB" if tld == "uk" else tld.upper())
-                for fc, n in counts.items():
-                    if fc not in targets_fips:
-                        continue
-                    primary = n == top
-                    if not primary and n < MIN_MENTIONS:
-                        continue
-                    iso = fips_to_iso[fc]
-                    if tone is not None:
-                        tone_sum[iso] += tone
-                        tone_n[iso] += 1
-                    rec = {
-                        "title": clean_title(title)[:300], "url": url, "domain": domain,
-                        "time": dt.datetime.strptime(when, "%Y%m%d%H%M%S").replace(tzinfo=dt.timezone.utc).isoformat(),
-                        "lang": lang, "tone": None if tone is None else round(tone, 2),
-                        "local": src == fc,
-                        "mentions": n,
-                    }
-                    score = n * (2 if primary else 1) + (1 if stamp >= stamps[len(stamps) // 4] else 0)
-                    lst = cand[iso]
-                    lst.append((score, rec))
-                    if len(lst) > CANDIDATES * 2:
-                        lst.sort(key=lambda x: (-x[0], x[1]["time"]))
-                        del lst[CANDIDATES:]
+                top_fc = max(counts, key=counts.get)
+                dom_total[domain] += 1
+                dom_primary[domain][top_fc] += 1
+                if not any(fc in targets_fips for fc in counts):
+                    continue
+                records.append((url, domain, title, when, tone, dict(counts), lang, top_fc))
     log(f"  {ok_files}/{len(jobs)} dosya işlendi, {len(seen_url)} haber, {time.time() - t0:.0f} sn")
     if ok_files < len(jobs) * 0.5:
         raise RuntimeError(f"GDELT dosyalarının yarısından azı indirilebildi ({ok_files}/{len(jobs)})")
+
+    def source_country(domain):
+        if domain in dom_map:
+            return dom_map[domain]
+        tld = domain.rsplit(".", 1)[-1]
+        fc = iso2_to_fips.get("GB" if tld == "uk" else tld.upper())
+        if fc:
+            return fc
+        # Listede yok, genel uzantı (.com vb.): haberlerinin çoğunluğu tek bir
+        # ülkeyle ilgiliyse o ülkenin yayını say.
+        tot = dom_total[domain]
+        if tot >= 5:
+            fc, n = max(dom_primary[domain].items(), key=lambda x: x[1])
+            if n / tot >= 0.6:
+                return fc
+        return None
+
+    cand = defaultdict(list)
+    tone_sum, tone_n = defaultdict(float), defaultdict(int)
+    cutoff_recent = stamps[len(stamps) // 4]
+    for url, domain, title, when, tone, counts, lang, top_fc in records:
+        src = source_country(domain)
+        size_bonus = min(6.0, math.log2(1 + dom_total[domain]))
+        for fc, n in counts.items():
+            if fc not in targets_fips:
+                continue
+            primary = fc == top_fc
+            if not primary and n < MIN_MENTIONS:
+                continue
+            iso = fips_to_iso[fc]
+            if tone is not None:
+                tone_sum[iso] += tone
+                tone_n[iso] += 1
+            local = src == fc
+            score = min(n, 10) * (2 if primary else 1) + size_bonus + (1 if when >= cutoff_recent else 0)
+            if not local and lang == "en":
+                score += 2
+            cand[iso].append((score, {
+                "title": fix_title(title, lang), "url": url, "domain": domain,
+                "time": dt.datetime.strptime(when, "%Y%m%d%H%M%S").replace(tzinfo=dt.timezone.utc).isoformat(),
+                "lang": lang, "tone": None if tone is None else round(tone, 2), "local": local,
+            }))
     return cand, tone_sum, tone_n
 
 
@@ -214,7 +250,7 @@ def pick(lst, local):
         if key in seen:
             continue
         seen.add(key)
-        r = {k: v for k, v in r.items() if k not in ("local", "mentions")}
+        r = {k: v for k, v in r.items() if k != "local"}
         out.append(r)
         if len(out) >= KEEP_PER_SOURCE:
             break
