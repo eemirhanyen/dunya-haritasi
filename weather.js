@@ -10,6 +10,7 @@
   var LAYERS = [
     { id: "scores", key: "layerScores", on: true },
     { id: "military", key: "layerMilitary", on: false },
+    { id: "wars", key: "layerWars", on: false },
     { id: "labels", key: "layerLabels", on: true },
     { id: "daynight", key: "layerDayNight", on: false, live: true },
     { id: "planes", key: "layerPlanes", on: false, live: true },
@@ -58,6 +59,7 @@
       }
       h += '<label class="ly-row' + (l.sub ? " ly-sub" : "") + '"><input type="checkbox" data-id="' + l.id + '"' + (on[l.id] ? " checked" : "") +
         "><span>" + esc(t(l.key)) + "</span>" + (cnt ? '<em class="ly-cnt">' + esc(cnt) + "</em>" : "") + "</label>";
+      if (l.id === "wars" && on.wars) h += warPanel();
       if (l.id === "sats" && on.sats) {
         h += '<div class="ly-scale ly-legend">' + [["#9fb4ff", "satStarlink"], ["#6dffb0", "satGnss"], ["#ffd36b", "satGeo"],
           ["#ff6bf0", "satStation"], ["#7ee6ff", "satOther"]].map(function (x) {
@@ -93,6 +95,12 @@
     Array.prototype.forEach.call(panel.querySelectorAll("input[type=checkbox]"), function (cb) {
       cb.addEventListener("change", function () { toggle(cb.getAttribute("data-id"), cb.checked); });
     });
+    var wsel = panel.querySelector(".war-sel");
+    if (wsel) wsel.addEventListener("change", function () {
+      wars.sel = wsel.value;
+      try { localStorage.setItem("war", wars.sel); } catch (e) { /* yok say */ }
+      applyWar(); renderPanel();
+    });
     var play = panel.querySelector(".ly-play");
     if (play) play.addEventListener("click", function () { timeline.playing = !timeline.playing; renderPanel(); });
     var range = panel.querySelector(".ly-range");
@@ -124,15 +132,79 @@
 
   function APP_fmt(n) { return new Intl.NumberFormat(APP.locale()).format(n); }
 
+  // ------------------------------------------------------------ savaşlar
+  var wars = { data: null, loading: null, sel: null };
+  try { wars.sel = localStorage.getItem("war"); } catch (e) { /* yok say */ }
+  function lang() { return document.documentElement.lang || "en"; }
+  function tx(o) { return o == null ? "" : typeof o === "string" ? o : (o[lang()] || o.en || ""); }
+  function loadWars() {
+    if (!wars.loading) {
+      wars.loading = fetch("data/conflicts.json?t=" + Math.floor(Date.now() / 3600000))
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          wars.data = d;
+          if (!wars.sel || !d.conflicts.some(function (c) { return c.id === wars.sel; })) wars.sel = d.conflicts[0].id;
+          applyWar(); renderPanel();
+        })
+        .catch(function (e) { console.warn("savaşlar", e); });
+    }
+    return wars.loading;
+  }
+  function currentWar() {
+    if (!wars.data) return null;
+    for (var i = 0; i < wars.data.conflicts.length; i++) if (wars.data.conflicts[i].id === wars.sel) return wars.data.conflicts[i];
+    return null;
+  }
+  function applyWar() {
+    var c = currentWar(), map = {};
+    if (c) {
+      if (c.involved) c.involved.countries.forEach(function (iso) { map[iso] = { color: c.involved.color, label: tx(c.involved.label) }; });
+      c.sides.forEach(function (sd) { sd.countries.forEach(function (iso) { map[iso] = { color: sd.color, label: tx(sd.label) }; }); });
+    }
+    APP.setWar(map);
+  }
+  function applyColorMode() {
+    APP.setColorMode(on.scores ? "scores" : on.military ? "military" : on.wars ? "war" : "none");
+    if (on.wars) { if (wars.data) applyWar(); else loadWars(); }
+  }
+  function warPanel() {
+    if (!wars.data) return '<div class="ly-note">' + esc(t("loading")) + "</div>";
+    var c = currentWar(), h = '<div class="war">';
+    h += '<select class="war-sel" aria-label="' + esc(t("layerWars")) + '">' + wars.data.conflicts.map(function (x) {
+      return '<option value="' + x.id + '"' + (x.id === wars.sel ? " selected" : "") + ">" + esc(tx(x.name)) + "</option>";
+    }).join("") + "</select>";
+    if (c) {
+      h += '<div class="war-legend">';
+      c.sides.forEach(function (sd, i) {
+        if (i === 1 && !c.overview) h += '<div class="war-vs">vs</div>';
+        h += '<div class="war-side"><i style="background:' + sd.color + '"></i><div><b>' + esc(tx(sd.label)) + "</b>" +
+          (sd.nonstate && sd.nonstate.length ? '<span class="war-ns" dir="ltr">+ ' + esc(sd.nonstate.join(", ")) + "</span>" : "") + "</div></div>";
+      });
+      if (c.involved) {
+        h += '<div class="war-side"><i style="background:' + c.involved.color + '"></i><div><span>' + esc(tx(c.involved.label)) + "</span></div></div>";
+      }
+      h += "</div>";
+      h += '<div class="war-status">' + esc(tx(c.status)) + "</div>";
+      if (c.timeline) h += '<div class="ly-note">' + esc(tx(c.timeline)) + "</div>";
+      if (c.involved && c.involved.note) h += '<div class="ly-note">' + esc(tx(c.involved.note)) + "</div>";
+      h += '<div class="ly-note">' + esc(t("source")) + ": " + c.sources.map(function (u, i) {
+        var host = u.replace(/^https?:\/\/(www\.)?/, "").split("/")[0];
+        return '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(host) + "</a>";
+      }).join(" · ") + "</div>";
+      h += '<div class="ly-note">' + esc(t("warUpdated", { d: wars.data.updated })) + " " + esc(tx(wars.data.note)) + "</div>";
+    }
+    return h + "</div>";
+  }
+
   function toggle(id, value) {
     on[id] = value;
     if (window.LiveLayers && window.LiveLayers.ids.indexOf(id) >= 0) window.LiveLayers.set(id, value);
     try { localStorage.setItem("layers", JSON.stringify(on)); } catch (e) { /* yok say */ }
-    // Ülke skoru ve askeri güç aynı anda boyanamaz: biri seçilince diğeri kapanır
-    if (id === "scores" && value) on.military = false;
-    if (id === "military" && value) on.scores = false;
-    if (id === "scores" || id === "military") {
-      APP.setColorMode(on.scores ? "scores" : on.military ? "military" : "none");
+    // Ülke skoru, askeri güç ve savaşlar aynı anda boyanamaz: biri seçilince diğerleri kapanır
+    var exclusive = ["scores", "military", "wars"];
+    if (exclusive.indexOf(id) >= 0) {
+      if (value) exclusive.forEach(function (k) { if (k !== id) on[k] = false; });
+      applyColorMode();
       try { localStorage.setItem("layers", JSON.stringify(on)); } catch (e) { /* yok say */ }
     }
     if (id === "labels") APP.setLabelsVisible(value);
@@ -394,8 +466,9 @@
     ["clouds", "precip", "temp", "wind"].forEach(function (k) { on[k] = false; });
   }
   if (MOBILE) document.getElementById("layers-box").removeAttribute("open");
-  if (on.scores && on.military) on.military = false;
-  APP.setColorMode(on.scores ? "scores" : on.military ? "military" : "none");
+  if (on.scores) { on.military = false; on.wars = false; }
+  if (on.military) on.wars = false;
+  applyColorMode();
   APP.setLabelsVisible(on.labels);
   renderPanel();
   document.addEventListener("langchange", renderPanel);

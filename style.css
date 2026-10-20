@@ -81,6 +81,17 @@ html, body {
 .ft-cities { color: var(--muted); font-size: 11.5px; margin: 2px 0 6px; }
 .ft-warn { color: #ffcf7a; font-size: 11px; line-height: 1.4; }
 .ft-foot { margin-top: 6px; font-size: 10.5px; color: var(--muted); }
+.war { margin: 4px 0 8px 24px; }
+[dir="rtl"] .war { margin: 4px 24px 8px 0; }
+.war-sel { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: 500 12.5px Inter, system-ui, sans-serif; }
+.war-legend { margin: 8px 0 6px; display: grid; gap: 6px; }
+.war-side { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; }
+.war-side i { width: 12px; height: 12px; border-radius: 3px; flex: none; margin-top: 2px; }
+.war-side b { font-weight: 600; }
+.war-ns { display: block; color: var(--muted); font-size: 11px; line-height: 1.35; margin-top: 1px; }
+.war-vs { font: 600 10px "JetBrains Mono", monospace; color: var(--muted); padding-left: 20px; }
+.war-status { font-size: 12px; line-height: 1.45; margin-bottom: 4px; }
+.war .ly-note a { color: var(--accent); text-decoration: none; }
 .ly-cnt { margin-left: auto; font: normal 500 11px "JetBrains Mono", monospace; color: var(--muted); }
 [dir="rtl"] .ly-sub { padding-left: 24px; font-size: 12.5px; color: var(--muted); }
 [dir="rtl"] .ly-sub { padding-left: 0; padding-right: 24px; }
@@ -108,6 +119,17 @@ html, body {
 .ft-cities { color: var(--muted); font-size: 11.5px; margin: 2px 0 6px; }
 .ft-warn { color: #ffcf7a; font-size: 11px; line-height: 1.4; }
 .ft-foot { margin-top: 6px; font-size: 10.5px; color: var(--muted); }
+.war { margin: 4px 0 8px 24px; }
+[dir="rtl"] .war { margin: 4px 24px 8px 0; }
+.war-sel { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: 500 12.5px Inter, system-ui, sans-serif; }
+.war-legend { margin: 8px 0 6px; display: grid; gap: 6px; }
+.war-side { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; }
+.war-side i { width: 12px; height: 12px; border-radius: 3px; flex: none; margin-top: 2px; }
+.war-side b { font-weight: 600; }
+.war-ns { display: block; color: var(--muted); font-size: 11px; line-height: 1.35; margin-top: 1px; }
+.war-vs { font: 600 10px "JetBrains Mono", monospace; color: var(--muted); padding-left: 20px; }
+.war-status { font-size: 12px; line-height: 1.45; margin-bottom: 4px; }
+.war .ly-note a { color: var(--accent); text-decoration: none; }
 .ly-cnt { margin-left: 0; margin-right: auto; }
 .ly-row input { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; cursor: pointer; }
 .ly-scale { margin: 2px 0 6px 24px; }

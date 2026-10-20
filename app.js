@@ -9,7 +9,7 @@
   var MIL_STOPS = [[0, [52, 62, 98]], [50, [118, 96, 222]], [100, [236, 122, 252]]];
   var I = window.I18N;
 
-  var state = { data: null, geo: null, selected: null, hover: null, lang: "en", mode: "scores" };
+  var state = { data: null, geo: null, selected: null, hover: null, lang: "en", mode: "scores", war: null };
   var fmt = {};
 
   // ------------------------------------------------------------ dil
@@ -115,8 +115,11 @@
     return c && c.final_score != null ? c : null;
   }
   // Etkin boyama moduna göre ülkenin değeri ve rengi
+  // Savaş modunda ülkenin rolü: { color, label }
+  function warRole(iso) { return state.war && state.war[iso] || null; }
   function modeValue(c) {
     if (!c) return null;
+    if (state.mode === "war") return null;
     if (state.mode === "military") return c.military ? c.military.score : null;
     return c.final_score;
   }
@@ -160,6 +163,7 @@
   function updateLegend() {
     var lg = document.querySelector(".legend");
     lg.classList.toggle("dim", state.mode === "none");
+    lg.hidden = state.mode === "war";   // savaş modunda açıklama katman panelinde
     lg.classList.toggle("mil", state.mode === "military");
     var title = lg.querySelector(".grad-title");
     title.setAttribute("data-i18n", state.mode === "military" ? "milLegend" : "gradTitle");
@@ -189,24 +193,35 @@
       .polygonsData(state.geo.features)
       .polygonAltitude(function (f) {
         if (f === state.selected) return 0.04;
+        if (state.mode === "war") return warRole(f.properties.iso) ? 0.014 : 0.006;
         if (f === state.hover && countryOf(f)) return 0.025;
         return state.mode !== "none" && modeValue(countryOf(f)) != null ? 0.012 : 0.006;
       })
       .polygonCapColor(function (f) {
         if (state.mode === "none") return f === state.hover && countryOf(f) ? "rgba(255,255,255,0.18)" : "rgba(14,22,38,0.35)";
+        if (state.mode === "war") {
+          var r = warRole(f.properties.iso);
+          return r ? r.color : (f === state.hover ? "#2c3753" : "#1c2438");
+        }
         var v = modeValue(countryOf(f));
         if (v == null) return f === state.hover && countryOf(f) ? "#3a4766" : COLORS.none;
         return modeColor(v, f === state.hover || f === state.selected ? 1 : 0.9);
       })
       .polygonSideColor(function (f) {
         if (state.mode === "none") return "rgba(0,0,0,0)";
+        if (state.mode === "war") { var r = warRole(f.properties.iso); return r ? hexAlpha(r.color, 0.45) : "rgba(20,28,45,0.6)"; }
         var v = modeValue(countryOf(f));
         return v != null ? modeColor(v, 0.35) : "rgba(20,28,45,0.6)";
       })
       .polygonStrokeColor(function () { return state.mode !== "none" ? "rgba(7,11,20,0.9)" : "rgba(200,215,240,0.35)"; })
       .polygonLabel(function (f) {
-        var c = countryOf(f), v = modeValue(c);
-        var s = v != null ? " · <b>" + fmt.n0.format(v) + "</b>" : (c ? " · " + esc(t("noData")) : "");
+        var c = countryOf(f), v = modeValue(c), s;
+        if (state.mode === "war") {
+          var r = warRole(f.properties.iso);
+          s = r ? " · " + esc(r.label) : "";
+        } else {
+          s = v != null ? " · <b>" + fmt.n0.format(v) + "</b>" : (c ? " · " + esc(t("noData")) : "");
+        }
         return '<div class="tip" dir="auto">' + esc(nameOf(f)) + s + "</div>";
       })
       .onPolygonHover(function (f) {
@@ -276,7 +291,15 @@
       showLabels = v;
       labelEls.forEach(function (x) { applyLabelVisibility(x[0]); });
     },
-    // "scores" | "military" | "none"
+    // Savaş boyaması: { ISO3: { color, label } }
+    setWar: function (map) {
+      state.war = map;
+      if (state.mode === "war" && globe) {
+        globe.polygonSideColor(globe.polygonSideColor());
+        refresh(true);
+      }
+    },
+    // "scores" | "military" | "war" | "none"
     setColorMode: function (m) {
       state.mode = m;
       updateLegend();

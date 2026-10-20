@@ -8,6 +8,8 @@ window.I18N = {
   rtl: ["ar", "fa"],
   dict: {
     tr: {
+      "layerWars": "Savaşlar",
+      "warUpdated": "Liste güncellemesi: {d}.",
       "stormTD": "Tropik çöküntü",
       "stormTS": "Tropik fırtına",
       "stormCat": "Kategori {n}",
@@ -103,6 +105,8 @@ window.I18N = {
       src_media: "Sınır Tanımayan Gazeteciler (RSF), Dünya Basın Özgürlüğü Endeksi"
     },
     en: {
+      "layerWars": "Wars",
+      "warUpdated": "List updated: {d}.",
       "stormTD": "Tropical depression",
       "stormTS": "Tropical storm",
       "stormCat": "Category {n}",
@@ -198,6 +202,8 @@ window.I18N = {
       src_media: "Reporters Without Borders (RSF), World Press Freedom Index"
     },
     es: {
+      "layerWars": "Guerras",
+      "warUpdated": "Lista actualizada: {d}.",
       "stormTD": "Depresión tropical",
       "stormTS": "Tormenta tropical",
       "stormCat": "Categoría {n}",
@@ -290,6 +296,8 @@ window.I18N = {
       errData: "No se pudieron cargar los datos ({e})."
     },
     fr: {
+      "layerWars": "Guerres",
+      "warUpdated": "Liste mise à jour : {d}.",
       "stormTD": "Dépression tropicale",
       "stormTS": "Tempête tropicale",
       "stormCat": "Catégorie {n}",
@@ -382,6 +390,8 @@ window.I18N = {
       errData: "Impossible de charger les données ({e})."
     },
     de: {
+      "layerWars": "Kriege",
+      "warUpdated": "Liste aktualisiert: {d}.",
       "stormTD": "Tropisches Tief",
       "stormTS": "Tropischer Sturm",
       "stormCat": "Kategorie {n}",
@@ -474,6 +484,8 @@ window.I18N = {
       errData: "Daten konnten nicht geladen werden ({e})."
     },
     pt: {
+      "layerWars": "Guerras",
+      "warUpdated": "Lista atualizada: {d}.",
       "stormTD": "Depressão tropical",
       "stormTS": "Tempestade tropical",
       "stormCat": "Categoria {n}",
@@ -566,6 +578,8 @@ window.I18N = {
       errData: "Não foi possível carregar os dados ({e})."
     },
     it: {
+      "layerWars": "Guerre",
+      "warUpdated": "Elenco aggiornato: {d}.",
       "stormTD": "Depressione tropicale",
       "stormTS": "Tempesta tropicale",
       "stormCat": "Categoria {n}",
@@ -658,6 +672,8 @@ window.I18N = {
       errData: "Impossibile caricare i dati ({e})."
     },
     ru: {
+      "layerWars": "Войны",
+      "warUpdated": "Список обновлён: {d}.",
       "stormTD": "Тропическая депрессия",
       "stormTS": "Тропический шторм",
       "stormCat": "Категория {n}",
@@ -750,6 +766,8 @@ window.I18N = {
       errData: "Не удалось загрузить данные ({e})."
     },
     ar: {
+      "layerWars": "الحروب",
+      "warUpdated": "آخر تحديث للقائمة: {d}.",
       "stormTD": "منخفض استوائي",
       "stormTS": "عاصفة استوائية",
       "stormCat": "الفئة {n}",
@@ -842,6 +860,8 @@ window.I18N = {
       errData: "تعذّر تحميل البيانات ({e})."
     },
     fa: {
+      "layerWars": "جنگ‌ها",
+      "warUpdated": "به‌روزرسانی فهرست: {d}.",
       "stormTD": "فرورفتگی استوایی",
       "stormTS": "توفان استوایی",
       "stormCat": "رده {n}",
@@ -934,6 +954,8 @@ window.I18N = {
       errData: "داده‌ها بارگذاری نشد ({e})."
     },
     zh: {
+      "layerWars": "战争",
+      "warUpdated": "列表更新于：{d}。",
       "stormTD": "热带低压",
       "stormTS": "热带风暴",
       "stormCat": "{n} 级",
@@ -1026,6 +1048,8 @@ window.I18N = {
       errData: "无法加载数据（{e}）。"
     },
     ja: {
+      "layerWars": "戦争",
+      "warUpdated": "リスト更新日：{d}。",
       "stormTD": "熱帯低気圧",
       "stormTS": "熱帯暴風雨",
       "stormCat": "カテゴリー {n}",
@@ -1118,6 +1142,8 @@ window.I18N = {
       errData: "データを読み込めませんでした（{e}）。"
     },
     ko: {
+      "layerWars": "전쟁",
+      "warUpdated": "목록 갱신: {d}.",
       "stormTD": "열대 저압부",
       "stormTS": "열대 폭풍",
       "stormCat": "{n}등급",
@@ -1210,6 +1236,8 @@ window.I18N = {
       errData: "데이터를 불러오지 못했습니다({e})."
     },
     hi: {
+      "layerWars": "युद्ध",
+      "warUpdated": "सूची अद्यतन: {d}।",
       "stormTD": "उष्णकटिबंधीय अवदाब",
       "stormTS": "उष्णकटिबंधीय तूफ़ान",
       "stormCat": "श्रेणी {n}",
@@ -1302,6 +1330,8 @@ window.I18N = {
       errData: "डेटा लोड नहीं हो सका ({e})।"
     },
     el: {
+      "layerWars": "Πόλεμοι",
+      "warUpdated": "Ενημέρωση λίστας: {d}.",
       "stormTD": "Τροπική ύφεση",
       "stormTS": "Τροπική καταιγίδα",
       "stormCat": "Κατηγορία {n}",

@@ -1,0 +1,360 @@
+{
+ "updated": "2026-10-20",
+ "note": {
+  "tr": "Liste elle derlenir ve kaynaklara dayanır; durum hızla değişebilir.",
+  "en": "Compiled by hand from the cited sources; the situation can change quickly."
+ },
+ "conflicts": [
+  {
+   "id": "iran2026",
+   "start": "2026-02-28",
+   "name": {
+    "tr": "2026 İran Savaşı",
+    "en": "2026 Iran war",
+    "es": "Guerra de Irán de 2026",
+    "fr": "Guerre d'Iran de 2026",
+    "de": "Iran-Krieg 2026",
+    "pt": "Guerra do Irã de 2026",
+    "it": "Guerra in Iran del 2026",
+    "ru": "Война с Ираном 2026 года",
+    "ar": "حرب إيران 2026",
+    "fa": "جنگ ایران ۲۰۲۶",
+    "zh": "2026年伊朗战争",
+    "ja": "2026年イラン戦争",
+    "ko": "2026년 이란 전쟁",
+    "hi": "2026 ईरान युद्ध",
+    "el": "Πόλεμος του Ιράν 2026"
+   },
+   "status": {
+    "tr": "Büyük çatışmalar duraklamış durumda, kalıcı ateşkes yok. Hürmüz Boğazı krizi sürüyor (20 Ekim 2026).",
+    "en": "Major combat is paused but there is no lasting ceasefire; the Strait of Hormuz crisis continues (20 Oct 2026)."
+   },
+   "timeline": {
+    "tr": "28 Şubat: savaş başladı · 8 Nisan: iki haftalık ateşkes · 17 Haziran: savaşı bitirme mutabakatı · 8 Temmuz: ABD–İran ateşkesi çöktü · 1 Eylül: ABD'nin bildirilen son hava saldırıları",
+    "en": "28 Feb: war began · 8 Apr: two-week ceasefire · 17 Jun: memorandum to end the war · 8 Jul: US–Iran ceasefire collapsed · 1 Sep: last reported US strikes"
+   },
+   "sides": [
+    {
+     "key": "a",
+     "color": "#4f8dff",
+     "label": {
+      "tr": "ABD, İsrail ve Körfez ortakları",
+      "en": "US, Israel and Gulf partners",
+      "es": "EE. UU., Israel y socios del Golfo",
+      "fr": "États-Unis, Israël et partenaires du Golfe",
+      "de": "USA, Israel und Golfpartner",
+      "pt": "EUA, Israel e parceiros do Golfo",
+      "it": "USA, Israele e partner del Golfo",
+      "ru": "США, Израиль и партнёры в Заливе",
+      "ar": "الولايات المتحدة وإسرائيل وشركاء الخليج",
+      "fa": "آمریکا، اسرائیل و شرکای خلیج فارس",
+      "zh": "美国、以色列及海湾伙伴",
+      "ja": "米国・イスラエル・湾岸諸国",
+      "ko": "미국·이스라엘·걸프 협력국",
+      "hi": "अमेरिका, इज़राइल और खाड़ी साझेदार",
+      "el": "ΗΠΑ, Ισραήλ και εταίροι του Κόλπου"
+     },
+     "countries": [
+      "USA",
+      "ISR",
+      "SAU",
+      "ARE",
+      "KWT",
+      "BHR"
+     ],
+     "nonstate": [
+      "Iranian separatist groups (CPFIK, PFF, Ahwaz Falcons)"
+     ]
+    },
+    {
+     "key": "b",
+     "color": "#ff9a3c",
+     "label": {
+      "tr": "İran ve müttefik gruplar",
+      "en": "Iran and allied groups",
+      "es": "Irán y grupos aliados",
+      "fr": "Iran et groupes alliés",
+      "de": "Iran und verbündete Gruppen",
+      "pt": "Irã e grupos aliados",
+      "it": "Iran e gruppi alleati",
+      "ru": "Иран и союзные группировки",
+      "ar": "إيران والجماعات المتحالفة",
+      "fa": "ایران و گروه‌های متحد",
+      "zh": "伊朗及其盟友武装",
+      "ja": "イランと同盟勢力",
+      "ko": "이란과 동맹 세력",
+      "hi": "ईरान और सहयोगी समूह",
+      "el": "Ιράν και συμμαχικές ομάδες"
+     },
+     "countries": [
+      "IRN"
+     ],
+     "nonstate": [
+      "Hezbollah",
+      "Houthis (Ansar Allah)",
+      "Popular Mobilization Forces / Islamic Resistance in Iraq",
+      "Hamas",
+      "Palestinian Islamic Jihad"
+     ]
+    }
+   ],
+   "involved": {
+    "color": "#c9c3a8",
+    "label": {
+     "tr": "Saldırıya uğrayan / topraklarında çatışma olan",
+     "en": "Attacked or fighting on its territory",
+     "es": "Atacado o con combates en su territorio",
+     "fr": "Attaqué ou théâtre de combats",
+     "de": "Angegriffen oder Kampfgebiet",
+     "pt": "Atacado ou com combates no território",
+     "it": "Attaccato o teatro di scontri",
+     "ru": "Подверглись ударам или боевые действия на территории",
+     "ar": "تعرّض لهجمات أو قتال على أراضيه",
+     "fa": "مورد حمله یا صحنهٔ درگیری",
+     "zh": "遭受攻击或境内发生战斗",
+     "ja": "攻撃を受けた／国内で戦闘",
+     "ko": "공격을 받았거나 영토 내 전투",
+     "hi": "हमला झेला या ज़मीन पर लड़ाई",
+     "el": "Δέχτηκε επίθεση ή πεδίο μαχών"
+    },
+    "countries": [
+     "LBN",
+     "IRQ",
+     "YEM",
+     "QAT",
+     "OMN",
+     "JOR",
+     "SYR",
+     "AZE",
+     "TUR",
+     "CYP"
+    ],
+    "note": {
+     "tr": "Lübnan ve Irak bazı kaynaklarda taraf olarak geçer; çatışmalar büyük ölçüde Hizbullah ve Irak'taki milisler üzerinden yürüdü. Yemen'de hükümet (PLC) koalisyonda, Husiler İran safında.",
+     "en": "Lebanon and Iraq are listed as parties in some sources; fighting there was largely via Hezbollah and Iraqi militias. In Yemen the government (PLC) is with the coalition and the Houthis with Iran."
+    }
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/2026_Iran_war",
+    "https://gulfnews.com/uae/us-israel-iran-war-lull-nears-breaking-point-us-israel-weighing-new-strikes-what-to-know-oct-20-2026-1.500716736",
+    "https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+   ]
+  },
+  {
+   "id": "ruukr",
+   "start": "2014-02-20",
+   "name": {
+    "tr": "Rusya–Ukrayna Savaşı",
+    "en": "Russo-Ukrainian war",
+    "es": "Guerra ruso-ucraniana",
+    "fr": "Guerre russo-ukrainienne",
+    "de": "Russisch-Ukrainischer Krieg",
+    "pt": "Guerra Russo-Ucraniana",
+    "it": "Guerra russo-ucraina",
+    "ru": "Российско-украинская война",
+    "ar": "الحرب الروسية الأوكرانية",
+    "fa": "جنگ روسیه و اوکراین",
+    "zh": "俄乌战争",
+    "ja": "ロシア・ウクライナ戦争",
+    "ko": "러시아-우크라이나 전쟁",
+    "hi": "रूस–यूक्रेन युद्ध",
+    "el": "Ρωσοουκρανικός πόλεμος"
+   },
+   "status": {
+    "tr": "Sürüyor; genel ateşkes yok. Tam ölçekli işgal 24 Şubat 2022'de başladı.",
+    "en": "Ongoing; no general ceasefire. The full-scale invasion began on 24 Feb 2022."
+   },
+   "timeline": {
+    "tr": "2014: Kırım'ın ilhakı ve Donbas savaşı · 24 Şubat 2022: tam ölçekli işgal · 2024–2025: Kuzey Kore askerleri Rusya safında",
+    "en": "2014: annexation of Crimea and Donbas war · 24 Feb 2022: full-scale invasion · 2024–2025: North Korean troops on Russia's side"
+   },
+   "sides": [
+    {
+     "key": "a",
+     "color": "#4f8dff",
+     "label": {
+      "tr": "Ukrayna",
+      "en": "Ukraine",
+      "es": "Ucrania",
+      "fr": "Ukraine",
+      "de": "Ukraine",
+      "pt": "Ucrânia",
+      "it": "Ucraina",
+      "ru": "Украина",
+      "ar": "أوكرانيا",
+      "fa": "اوکراین",
+      "zh": "乌克兰",
+      "ja": "ウクライナ",
+      "ko": "우크라이나",
+      "hi": "यूक्रेन",
+      "el": "Ουκρανία"
+     },
+     "countries": [
+      "UKR"
+     ],
+     "nonstate": []
+    },
+    {
+     "key": "b",
+     "color": "#ff9a3c",
+     "label": {
+      "tr": "Rusya",
+      "en": "Russia",
+      "es": "Rusia",
+      "fr": "Russie",
+      "de": "Russland",
+      "pt": "Rússia",
+      "it": "Russia",
+      "ru": "Россия",
+      "ar": "روسيا",
+      "fa": "روسیه",
+      "zh": "俄罗斯",
+      "ja": "ロシア",
+      "ko": "러시아",
+      "hi": "रूस",
+      "el": "Ρωσία"
+     },
+     "countries": [
+      "RUS"
+     ],
+     "nonstate": []
+    }
+   ],
+   "involved": {
+    "color": "#d9b38c",
+    "label": {
+     "tr": "Rusya'yı askerî olarak destekleyen",
+     "en": "Military support to Russia",
+     "es": "Apoyo militar a Rusia",
+     "fr": "Soutien militaire à la Russie",
+     "de": "Militärische Unterstützung Russlands",
+     "pt": "Apoio militar à Rússia",
+     "it": "Sostegno militare alla Russia",
+     "ru": "Военная поддержка России",
+     "ar": "دعم عسكري لروسيا",
+     "fa": "حمایت نظامی از روسیه",
+     "zh": "对俄罗斯提供军事支持",
+     "ja": "ロシアへの軍事支援",
+     "ko": "러시아 군사 지원",
+     "hi": "रूस को सैन्य समर्थन",
+     "el": "Στρατιωτική υποστήριξη στη Ρωσία"
+    },
+    "countries": [
+     "BLR",
+     "PRK"
+    ],
+    "note": {
+     "tr": "Belarus 2022'de topraklarını işgal için kullandırdı; Kuzey Kore 2024–2025'te asker gönderdi. Ukrayna'ya silah ve mali destek veren çok sayıda ülke ayrıca boyanmadı.",
+     "en": "Belarus let its territory be used for the 2022 invasion; North Korea sent troops in 2024–2025. The many countries giving Ukraine arms and aid are not coloured separately."
+    }
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_ongoing_armed_conflicts",
+    "https://kyivindependent.com/ukraine-war-latest-russian-territorial-advances-slowed-by-more-than-half-in-2026-syrskyi-says/"
+   ]
+  },
+  {
+   "id": "all",
+   "overview": true,
+   "name": {
+    "tr": "Tüm silahlı çatışmalar",
+    "en": "All armed conflicts",
+    "es": "Todos los conflictos armados",
+    "fr": "Tous les conflits armés",
+    "de": "Alle bewaffneten Konflikte",
+    "pt": "Todos os conflitos armados",
+    "it": "Tutti i conflitti armati",
+    "ru": "Все вооружённые конфликты",
+    "ar": "جميع النزاعات المسلحة",
+    "fa": "همهٔ درگیری‌های مسلحانه",
+    "zh": "所有武装冲突",
+    "ja": "すべての武力紛争",
+    "ko": "모든 무력 분쟁",
+    "hi": "सभी सशस्त्र संघर्ष",
+    "el": "Όλες οι ένοπλες συγκρούσεις"
+   },
+   "status": {
+    "tr": "Son 1 yılda ölü sayısına göre: büyük savaş 10.000+, küçük savaş 1.000–9.999. İç savaşlar ve isyanlar dahil. Her çatışmanın ana ülkeleri boyanmıştır.",
+    "en": "By deaths in the past year: major war 10,000+, minor war 1,000–9,999. Includes civil wars and insurgencies. Only each conflict's core countries are coloured."
+   },
+   "sides": [
+    {
+     "key": "major",
+     "color": "#ff5a4f",
+     "label": {
+      "tr": "Büyük savaş (10.000+ ölü)",
+      "en": "Major war (10,000+ deaths)",
+      "es": "Guerra mayor (10 000+ muertes)",
+      "fr": "Guerre majeure (10 000+ morts)",
+      "de": "Großer Krieg (10.000+ Tote)",
+      "pt": "Guerra maior (10 000+ mortes)",
+      "it": "Guerra maggiore (10.000+ morti)",
+      "ru": "Крупная война (10 000+ погибших)",
+      "ar": "حرب كبرى (أكثر من 10٬000 قتيل)",
+      "fa": "جنگ بزرگ (بیش از ۱۰٬۰۰۰ کشته)",
+      "zh": "大规模战争（死亡 10,000+）",
+      "ja": "大規模戦争（死者 1万人以上）",
+      "ko": "대규모 전쟁(사망 1만 명 이상)",
+      "hi": "बड़ा युद्ध (10,000+ मौतें)",
+      "el": "Μεγάλος πόλεμος (10.000+ νεκροί)"
+     },
+     "countries": [
+      "ISR",
+      "PSE",
+      "LBN",
+      "IRN",
+      "MMR",
+      "SDN",
+      "SSD",
+      "COD",
+      "SOM",
+      "MLI",
+      "BFA",
+      "NER",
+      "NGA",
+      "MEX",
+      "UKR",
+      "RUS"
+     ]
+    },
+    {
+     "key": "minor",
+     "color": "#ffb347",
+     "label": {
+      "tr": "Küçük savaş (1.000–9.999 ölü)",
+      "en": "Minor war (1,000–9,999 deaths)",
+      "es": "Guerra menor (1000–9999 muertes)",
+      "fr": "Guerre mineure (1 000–9 999 morts)",
+      "de": "Kleiner Krieg (1.000–9.999 Tote)",
+      "pt": "Guerra menor (1000–9999 mortes)",
+      "it": "Guerra minore (1.000–9.999 morti)",
+      "ru": "Малая война (1000–9999 погибших)",
+      "ar": "حرب صغرى (1٬000–9٬999 قتيل)",
+      "fa": "جنگ کوچک (۱٬۰۰۰ تا ۹٬۹۹۹ کشته)",
+      "zh": "小规模战争（死亡 1,000–9,999）",
+      "ja": "小規模戦争（死者 1,000〜9,999 人）",
+      "ko": "소규모 전쟁(사망 1,000~9,999명)",
+      "hi": "छोटा युद्ध (1,000–9,999 मौतें)",
+      "el": "Μικρός πόλεμος (1.000–9.999 νεκροί)"
+     },
+     "countries": [
+      "ETH",
+      "COL",
+      "AFG",
+      "PAK",
+      "ECU",
+      "VEN",
+      "YEM",
+      "SYR",
+      "CMR",
+      "CAF",
+      "HTI"
+     ]
+    }
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_ongoing_armed_conflicts"
+   ]
+  }
+ ]
+}
