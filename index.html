@@ -14,28 +14,34 @@
   <div id="globe" aria-label="Dünya küresi"></div>
 
   <header class="brand">
-    <h1>Dünya Haritası</h1>
-    <p>Ülkeler, dünya ortalamasına göre</p>
+    <h1 data-i18n="title">Dünya Haritası</h1>
+    <p data-i18n="subtitle">Ülkeler, dünya ortalamasına göre</p>
+    <label class="lang-wrap">
+      <span class="sr" data-i18n="language">Dil</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 0c2.8 2.7 4 6 4 10s-1.2 7.3-4 10m0-20C9.2 4.7 8 8 8 12s1.2 7.3 4 10M2.5 9h19M2.5 15h19"/></svg>
+      <select id="lang"></select>
+    </label>
   </header>
 
   <div class="legend" aria-label="Renk açıklaması">
-    <div class="grad-title">Skor · dünya yüzdelik dilimi</div>
-    <div class="grad"></div>
-    <div class="grad-ticks"><span>0</span><span>50<br><em>dünya ortası</em></span><span>100</span></div>
-    <div class="legend-row muted"><span class="dot none"></span>Veri yetersiz</div>
+    <div class="grad-title" data-i18n="gradTitle">Skor · dünya yüzdelik dilimi</div>
+    <div class="grad" dir="ltr"></div>
+    <div class="grad-ticks" dir="ltr"><span>0</span><span>50<br><em data-i18n="worldMid">dünya ortası</em></span><span>100</span></div>
+    <div class="legend-row muted"><span class="dot none"></span><span data-i18n="noData">Veri yetersiz</span></div>
     <div class="legend-meta" id="updated"></div>
   </div>
 
-  <div class="hint" id="hint">Bir ülkeye tıkla</div>
+  <div class="hint" id="hint" data-i18n="hint">Bir ülkeye tıkla</div>
 
   <aside class="panel" id="panel" aria-hidden="true">
-    <button class="close" id="close" aria-label="Paneli kapat">×</button>
+    <button class="close" id="close" aria-label="Paneli kapat" data-i18n-aria="closePanel">×</button>
     <div id="panel-body"></div>
   </aside>
 
   <div class="error" id="error" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

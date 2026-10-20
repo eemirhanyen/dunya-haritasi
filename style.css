@@ -33,6 +33,21 @@ html, body {
 }
 .brand h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
 .brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.lang-wrap {
+  pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 10px; color: var(--muted);
+}
+.lang-wrap select {
+  background: transparent; border: 0; color: var(--text); font: 500 12.5px Inter, system-ui, sans-serif; cursor: pointer; padding: 2px 2px;
+}
+.lang-wrap select option { background: #131b2e; color: var(--text); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[dir="rtl"] body, [dir="rtl"] .panel, [dir="rtl"] .legend { text-align: right; }
+[dir="rtl"] .close { right: auto; left: 12px; }
+[dir="rtl"] .p-head { padding-right: 0; padding-left: 36px; }
+[dir="rtl"] .ai-drv { padding-left: 0; padding-right: 18px; }
+[dir="rtl"] .ai-top .spark { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .parts td:nth-child(2), [dir="rtl"] .parts td:nth-child(3) { text-align: left; padding-left: 0; padding-right: 10px; }
 
 .legend {
   position: fixed; left: 24px; bottom: 24px;
