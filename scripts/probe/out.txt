@@ -1,30 +1,75 @@
-=== GDELT
-sourcecountry:turkey 429 33
-    b'HTTP Error 429: Too Many Requests'
-"Turkey" sourcelang:english 429 33
-    b'HTTP Error 429: Too Many Requests'
-sourcecountry:greece 429 33
-    b'HTTP Error 429: Too Many Requests'
-sourcecountry:israel 429 33
-    b'HTTP Error 429: Too Many Requests'
-sourcecountry:TU 200 4271
-    20261017T120000Z haber7.com Turkish Turkey | Türkiyenin  büyük gardaş  olma derdi yok - Haber 7 Yazarı Sevil Nuriyeva İsmayılov
-    20261017T120000Z haber7.com Turkish Turkey | Cumhurbaşkanı Danışmanı Oğandan Terörsüz Türkiye mesajı
-    20261017T120000Z haber7.com Turkish Turkey | Sürücüler dikkat : Bu işareti gören hemen yapsın ! Çoğu kişi bilmiyordu
-    20261017T111500Z haber7.com Turkish Turkey | TYB İstanbul Şube Başkanı Bıyıklı  dan Cevat Özkaya için taziye mesajı
 === YAHOO
-XU100.IS 200 BIST 100 TRY 11570.06 1792488804
-GD.AT 200 COMPOSITE INDEX EUR 2596.51 1792488788
-TA35.TA 200 TA-35 ILS 4215.6 1792488803
-^GSPC 200 S&P 500 USD 7690.73 1792442654
-^GDAXI 200 DAX P EUR 25133.49 1792488805
-000001.SS 200 SSE Composite Index CNY 3735.37 1792479624
-^BSESN 200 S&P BSE SENSEX INR 73852.9 1792404145
-^N225 200 Nikkei 225 JPY 64075.42 1792478702
-^MERV 200 MERVAL  2848945.2 1792182243
-^JN0U.JO 200 Top 40 USD Net TRI Index USD 6624.75 1792488804
-=== STOOQ
-^xu100 404 b'HTTP Error 404: Not Found'
-^ath 404 b'HTTP Error 404: Not Found'
-^ta35 404 b'HTTP Error 404: Not Found'
-^spx 404 b'HTTP Error 404: Not Found'
+USA ^GSPC OK S&P 500 USD 7690.73 2026-10-19 0.41 0.53
+CAN ^GSPTSE OK S&P/TSX Composite index CAD 35928.6 2026-10-19 -0.69 0.34
+MEX ^MXX OK IPC MEXICO MXN 69010.67 2026-10-19 0.12 8.89
+BRA ^BVSP OK IBOVESPA BRL 205079.0 2026-10-19 -0.17 10.72
+ARG ^MERV OK MERVAL  2848945.0 2026-10-16 -0.35 -5.94
+CHL ^IPSA FAIL HTTP Error 404: Not Found
+PER ^SPBLPGPT FAIL HTTP Error 404: Not Found
+COL ^COLCAP FAIL HTTP Error 404: Not Found
+COL ICOLCAP.CL OK Fondo Bursátil iShares MSCI COLCAP COP 25049.0 2026-10-19 -2.15 -0.31
+GBR ^FTSE OK FTSE 100 GBP 10704.16 2026-10-20 -0.56 0.42
+DEU ^GDAXI OK DAX P EUR 25121.47 2026-10-20 -0.78 -0.72
+FRA ^FCHI OK CAC 40 EUR 7819.77 2026-10-20 -0.61 -3.04
+ITA FTSEMIB.MI OK FTSE MIB Index EUR 48755.79 2026-10-20 -0.67 -5.41
+ESP ^IBEX OK IBEX 35 EUR 18981.3 2026-10-20 -0.3 -2.73
+NLD ^AEX OK AEX-Index EUR 1134.69 2026-10-20 -0.59 3.62
+BEL ^BFX OK BEL 20 EUR 5526.89 2026-10-20 -0.13 -3.26
+CHE ^SSMI OK SMI PR CHF 14355.01 2026-10-20 -0.1 4.12
+AUT ^ATX OK ATX EUR 6430.13 2026-10-20 -1.17 -5.41
+SWE ^OMX OK OMX Stockholm 30 Index SEK 3210.9 2026-10-20 -1.74 -1.64
+NOR OBX.OL FAIL yetersiz seri
+NOR ^OSEAX FAIL HTTP Error 404: Not Found
+DNK ^OMXC25 OK OMX Copenhagen 25 Index DKK 1846.27 2026-10-20 -0.17 -1.28
+FIN ^OMXH25 OK OMX Helsinki 25 EUR 6238.26 2026-10-20 -1.45 -4.89
+POL WIG20.WA FAIL yetersiz seri
+POL ^WIG20 FAIL HTTP Error 404: Not Found
+PRT PSI20.LS OK PSI EUR 9419.34 2026-10-20 0.27 -1.29
+IRL ^ISEQ OK ISEQ All Share EUR 13888.89 2026-10-20 -1.28 -2.27
+CZE ^PX FAIL 'close'
+CZE FPXAA.PR FAIL yetersiz seri
+HUN ^BUX FAIL HTTP Error 404: Not Found
+HUN ^BUX.BD FAIL yetersiz seri
+ROU ^BETI FAIL HTTP Error 404: Not Found
+ROU BET.RO FAIL HTTP Error 404: Not Found
+GRC GD.AT OK COMPOSITE INDEX EUR 2596.96 2026-10-20 -0.25 -2.42
+TUR XU100.IS OK BIST 100 TRY 11585.29 2026-10-20 1.36 -12.79
+ISR TA35.TA OK TA-35 ILS 4215.52 2026-10-20 0.23 -1.74
+RUS IMOEX.ME FAIL HTTP Error 404: Not Found
+SAU ^TASI.SR FAIL yetersiz seri
+EGY ^CASE30 FAIL yetersiz seri
+ZAF ^J203.JO OK All Share Index ZAR 109062.97 2026-10-20 0.06 -3.49
+NGA ^NGSEINDX FAIL HTTP Error 404: Not Found
+KEN ^NSE20 FAIL HTTP Error 404: Not Found
+MAR ^MASI FAIL HTTP Error 404: Not Found
+IND ^NSEI OK NIFTY 50 INR 22888.95 2026-10-19 -1.11 -1.96
+PAK ^KSE FAIL HTTP Error 404: Not Found
+CHN 000001.SS OK SSE Composite Index CNY 3735.37 2026-10-20 0.12 -4.51
+HKG ^HSI OK HANG SENG INDEX HKD 23867.74 2026-10-20 -1.32 -3.57
+JPN ^N225 OK Nikkei 225 JPY 64075.42 2026-10-20 -1.3 -1.45
+KOR ^KS11 OK KOSPI Composite Index KRW 5552.74 2026-10-20 -3.73 -19.46
+SGP ^STI OK STI Index SGD 5404.02 2026-10-20 -0.15 -4.46
+MYS ^KLSE OK FTSE Bursa Malaysia KLCI MYR 1599.58 2026-10-20 0.24 -3.96
+IDN ^JKSE OK IDX COMPOSITE IDR 5278.89 2026-10-20 5.65 -18.04
+THA ^SET.BK FAIL yetersiz seri
+PHL PSEI.PS FAIL yetersiz seri
+VNM ^VNINDEX.VN FAIL yetersiz seri
+VNM VNINDEX FAIL HTTP Error 404: Not Found
+AUS ^AXJO OK S&P/ASX 200 [XJO] AUD 8816.9 2026-10-20 -0.33 0.98
+NZL ^NZ50 OK S&P/NZX 50 INDEX GROSS ( GROSS NZD 13631.69 2026-10-20 -0.15 -0.78
+QAT ^QSI FAIL HTTP Error 404: Not Found
+ARE ^ADI FAIL HTTP Error 404: Not Found
+ARE DFMGI.AE FAIL yetersiz seri
+KWT ^BKA FAIL HTTP Error 404: Not Found
+OKMAP {"USA": "^GSPC", "CAN": "^GSPTSE", "MEX": "^MXX", "BRA": "^BVSP", "ARG": "^MERV", "COL": "ICOLCAP.CL", "GBR": "^FTSE", "DEU": "^GDAXI", "FRA": "^FCHI", "ITA": "FTSEMIB.MI", "ESP": "^IBEX", "NLD": "^AEX", "BEL": "^BFX", "CHE": "^SSMI", "AUT": "^ATX", "SWE": "^OMX", "DNK": "^OMXC25", "FIN": "^OMXH25", "PRT": "PSI20.LS", "IRL": "^ISEQ", "GRC": "GD.AT", "TUR": "XU100.IS", "ISR": "TA35.TA", "ZAF": "^J203.JO", "IND": "^NSEI", "CHN": "000001.SS", "HKG": "^HSI", "JPN": "^N225", "KOR": "^KS11", "SGP": "^STI", "MYS": "^KLSE", "IDN": "^JKSE", "AUS": "^AXJO", "NZL": "^NZ50"}
+=== GDELT
+GRC sourcecountry:GR 19
+     2026-10-17T12:00:00+00:00 in.gr Greek | Μαρόκο : Ορκίστηκε η νέα κυβέρνηση της χώρας
+     2026-10-17T12:00:00+00:00 in.gr Greek | Στο Δημαρχείο Αργοστολίου διπλωματικές αντιπροσωπείες από την Ταϊλάνδη , τις Φιλιππίνες , 
+     2026-10-17T12:00:00+00:00 in.gr Greek | Ποιος είναι ο καλύτερος Τζέιμς Μποντ ; Όλοι οι ηθοποιοί του 007 , από τον χειρότερο έως το
+ISR Israel sourcelang:english -sourcecountry:IS 14
+     2026-10-17T19:30:00+00:00 aljazeera.com English | Why are Latin American countries building closer ties with Israel ?
+     2026-10-17T12:00:00+00:00 en.dailypakistan.com.pk English | Trump again pushes Saudi Arabia to Accept Israel Help against Houthis
+     2026-10-17T16:30:00+00:00 nypost.com English | Netanyahu fires back at Obama after he accuses Israel of stealing Palestinian land
+TUR (Turkey OR Türkiye OR Turkiye) sourcelang:english -sourcecountry:TU ERR https://api.gdeltproject.org/api/v2/doc/doc?query=%28Turkey+OR+T%C3%BCrkiye+OR+Turkiye%29+sourcelang%3Aenglish+-sourceco -> HTTP Error 429: Too Many Requests
+PSE (sourcecountry:GZ OR sourcecountry:WE) 0
