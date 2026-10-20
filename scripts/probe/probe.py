@@ -1,34 +1,24 @@
-import json, time, sys, os, urllib.request, urllib.parse
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import fetch_news as fn
-cands = {
- "USA":["^GSPC"],"CAN":["^GSPTSE"],"MEX":["^MXX"],"BRA":["^BVSP"],"ARG":["^MERV"],"CHL":["^IPSA"],"PER":["^SPBLPGPT"],"COL":["^COLCAP","ICOLCAP.CL"],
- "GBR":["^FTSE"],"DEU":["^GDAXI"],"FRA":["^FCHI"],"ITA":["FTSEMIB.MI"],"ESP":["^IBEX"],"NLD":["^AEX"],"BEL":["^BFX"],"CHE":["^SSMI"],"AUT":["^ATX"],
- "SWE":["^OMX"],"NOR":["OBX.OL","^OSEAX"],"DNK":["^OMXC25"],"FIN":["^OMXH25"],"POL":["WIG20.WA","^WIG20"],"PRT":["PSI20.LS","^PSI20"],"IRL":["^ISEQ"],
- "CZE":["^PX","FPXAA.PR"],"HUN":["^BUX","^BUX.BD"],"ROU":["^BETI","BET.RO"],"GRC":["GD.AT"],"TUR":["XU100.IS"],"ISR":["TA35.TA"],"RUS":["IMOEX.ME"],
- "SAU":["^TASI.SR"],"EGY":["^CASE30"],"ZAF":["^J203.JO","^JN0U.JO"],"NGA":["^NGSEINDX"],"KEN":["^NSE20"],"MAR":["^MASI"],
- "IND":["^NSEI","^BSESN"],"PAK":["^KSE"],"CHN":["000001.SS"],"HKG":["^HSI"],"JPN":["^N225"],"KOR":["^KS11"],"SGP":["^STI"],"MYS":["^KLSE"],
- "IDN":["^JKSE"],"THA":["^SET.BK"],"PHL":["PSEI.PS"],"VNM":["^VNINDEX.VN","VNINDEX"],"AUS":["^AXJO"],"NZL":["^NZ50"],"QAT":["^QSI"],"ARE":["^ADI","DFMGI.AE"],"KWT":["^BKA"],
-}
-print("=== YAHOO")
-ok = {}
-for iso, syms in cands.items():
-    for s in syms:
-        try:
-            m = fn.market(s)
-            print(iso, s, "OK", m["name"], m["currency"], m["last"], m["as_of"][:10], m["chg_1d"], m["chg_1m"])
-            ok.setdefault(iso, s)
-            break
-        except Exception as e:
-            print(iso, s, "FAIL", str(e)[:80])
-        time.sleep(0.5)
-print("OKMAP", json.dumps(ok))
-print("=== GDELT")
-tests = [("GRC", fn.local_query(["GR"])), ("ISR", fn.intl_query("ISR","Israel",["IS"])), ("TUR", fn.intl_query("TUR","Turkiye",["TU"])), ("PSE", fn.local_query(["GZ","WE"]))]
-for iso, q in tests:
+import json, time, sys, os, urllib.request, urllib.parse, xml.etree.ElementTree as ET
+UA={"User-Agent":"Mozilla/5.0 (compatible; dunya-haritasi/1.0)"}
+def get(u):
     try:
-        arts = fn.clean(fn.gdelt(q, 20), 20)
-        print(iso, q, len(arts))
-        for a in arts[:3]: print("    ", a["time"], a["domain"], a["lang"], "|", a["title"][:90])
-    except Exception as e:
-        print(iso, q, "ERR", str(e)[:200])
+        with urllib.request.urlopen(urllib.request.Request(u,headers=UA),timeout=60) as r: return r.status, r.read()
+    except Exception as e: return getattr(e,'code',None), str(e).encode()
+print("=== GDELT freshness")
+for q in ["sourcecountry:TU","sourcecountry:US"]:
+    for span in ["24h","72h"]:
+        st,b=get("https://api.gdeltproject.org/api/v2/doc/doc?"+urllib.parse.urlencode({"query":q,"mode":"artlist","maxrecords":"5","timespan":span,"format":"json","sort":"datedesc"}))
+        try:
+            a=json.loads(b).get("articles",[])
+            print(q,span,st,len(a),[x["seendate"] for x in a[:5]])
+        except Exception: print(q,span,st,b[:120])
+        time.sleep(12)
+st,b=get("http://data.gdeltproject.org/gdeltv2/lastupdate.txt"); print("lastupdate",st,b[:300])
+print("=== GOOGLE NEWS RSS")
+for name,u in [("TR top","https://news.google.com/rss?hl=tr&gl=TR&ceid=TR:tr"),("GR top","https://news.google.com/rss?hl=el&gl=GR&ceid=GR:el"),("IL top","https://news.google.com/rss?hl=he&gl=IL&ceid=IL:he"),("Turkey intl","https://news.google.com/rss/search?q=Turkey+when:3d&hl=en-US&gl=US&ceid=US:en")]:
+    st,b=get(u)
+    try:
+        items=ET.fromstring(b).findall("./channel/item")
+        print(name,st,len(items))
+        for it in items[:3]: print("   ",it.findtext("pubDate"),"|",it.findtext("title")[:100])
+    except Exception as e: print(name,st,b[:150])
