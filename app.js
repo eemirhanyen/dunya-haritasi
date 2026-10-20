@@ -130,9 +130,14 @@
     // Kaba merkez: en büyük halkanın ortalaması
     var g = f.geometry, rings = g.type === "Polygon" ? [g.coordinates[0]] : g.coordinates.map(function (p) { return p[0]; });
     rings.sort(function (a, b) { return b.length - a.length; });
-    var r = rings[0], x = 0, y = 0;
-    r.forEach(function (p) { x += p[0]; y += p[1]; });
-    return { lng: x / r.length, lat: y / r.length };
+    var r = rings[0], x = 0, y = 0, minX = 180, maxX = -180, minY = 90, maxY = -90;
+    r.forEach(function (p) {
+      x += p[0]; y += p[1];
+      minX = Math.min(minX, p[0]); maxX = Math.max(maxX, p[0]);
+      minY = Math.min(minY, p[1]); maxY = Math.max(maxY, p[1]);
+    });
+    var span = Math.max(maxX - minX, maxY - minY);
+    return { lng: x / r.length, lat: y / r.length, span: span };
   }
 
   function select(f) {
@@ -140,7 +145,7 @@
     globe.controls().autoRotate = false;
     var c = centroid(f);
     var mobile = window.innerWidth <= 640;
-    globe.pointOfView({ lat: c.lat - (mobile ? 6 : 0), lng: c.lng + (mobile ? 0 : 9), altitude: 0.75 }, 1100);
+    globe.pointOfView({ lat: c.lat - (mobile ? 6 : 0), lng: c.lng + (mobile ? 0 : 9), altitude: Math.max(0.6, Math.min(2.2, c.span / 28)) }, 1100);
     document.getElementById("hint").classList.add("gone");
     renderPanel(countryOf(f));
     var p = document.getElementById("panel");
