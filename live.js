@@ -77,16 +77,65 @@
   }
 
   // ------------------------------------------------------------ uçaklar
-  var dot = (function () {
+  // Uçak simgesi: burnu yukarı bakan beyaz siluet (renk shader'da verilir)
+  var planeTex = (function () {
     var c = document.createElement("canvas");
-    c.width = c.height = 32;
-    var x = c.getContext("2d"), g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
-    g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.35, "rgba(255,255,255,0.9)");
-    g.addColorStop(1, "rgba(255,255,255,0)");
-    x.fillStyle = g; x.fillRect(0, 0, 32, 32);
-    return new THREE.CanvasTexture(c);
+    c.width = c.height = 64;
+    var x = c.getContext("2d");
+    x.translate(32, 32);
+    x.fillStyle = "#fff";
+    x.beginPath();
+    x.moveTo(0, -29);                       // burun
+    x.bezierCurveTo(3, -26, 3.5, -20, 3.5, -12);
+    x.lineTo(28, 2); x.lineTo(28, 7); x.lineTo(3.5, 0);   // sağ kanat
+    x.lineTo(3, 18); x.lineTo(11, 24); x.lineTo(11, 28); x.lineTo(0, 25);   // sağ kuyruk
+    x.lineTo(-11, 28); x.lineTo(-11, 24); x.lineTo(-3, 18);                 // sol kuyruk
+    x.lineTo(-3.5, 0); x.lineTo(-28, 7); x.lineTo(-28, 2); x.lineTo(-3.5, -12);   // sol kanat
+    x.bezierCurveTo(-3.5, -20, -3, -26, 0, -29);
+    x.closePath();
+    x.fill();
+    var t = new THREE.CanvasTexture(c);
+    t.generateMipmaps = true;
+    return t;
   })();
+
+  // Her uçak ekranda kendi yönüne döner: yön vektörü ekrana izdüşürülüp açı hesaplanır
+  var VERT = [
+    "attribute vec3 dir;",
+    "uniform float size;",
+    "uniform float aspect;",
+    "varying float vAng;",
+    "void main() {",
+    "  vec4 mv = modelViewMatrix * vec4(position, 1.0);",
+    "  vec4 c0 = projectionMatrix * mv;",
+    "  vec4 c1 = projectionMatrix * modelViewMatrix * vec4(position + dir, 1.0);",
+    "  vec2 d = c1.xy / c1.w - c0.xy / c0.w;",
+    "  d.x *= aspect;",
+    "  vAng = atan(d.x, d.y);",
+    "  gl_PointSize = clamp(size * 600.0 / -mv.z, 7.0, 30.0);",
+    "  gl_Position = c0;",
+    "}"
+  ].join("\n");
+  var FRAG = [
+    "uniform sampler2D map;",
+    "uniform vec3 color;",
+    "varying float vAng;",
+    "void main() {",
+    "  vec2 p = vec2(gl_PointCoord.x - 0.5, 0.5 - gl_PointCoord.y);",
+    "  float c = cos(vAng), s = sin(vAng);",
+    "  vec2 uv = vec2(c * p.x - s * p.y, s * p.x + c * p.y) + 0.5;",
+    "  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) discard;",
+    "  vec4 t = texture2D(map, uv);",
+    "  if (t.a < 0.08) discard;",
+    "  gl_FragColor = vec4(color, t.a * 0.95);",
+    "}"
+  ].join("\n");
+  var materials = [];
+  function updateAspect() {
+    var a = window.innerWidth / Math.max(1, window.innerHeight);
+    materials.forEach(function (m) { m.uniforms.aspect.value = a; });
+  }
+  window.addEventListener("resize", updateAspect);
 
   function makeFleet(id, url, color, size) {
     var f = { id: id, url: url, data: [], fetched: 0, points: null, timer: null, ttl: 120, error: false };
@@ -94,11 +143,20 @@
       var n = f.data.length;
       var geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+      geo.setAttribute("dir", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
       if (f.points) { f.points.geometry.dispose(); f.points.geometry = geo; }
       else {
-        f.points = new THREE.Points(geo, new THREE.PointsMaterial({
-          size: size, map: dot, color: color, transparent: true, depthWrite: false, sizeAttenuation: true
-        }));
+        var mat = new THREE.ShaderMaterial({
+          uniforms: {
+            map: { value: planeTex }, color: { value: new THREE.Color(color) },
+            size: { value: size }, aspect: { value: 1 }
+          },
+          vertexShader: VERT, fragmentShader: FRAG,
+          transparent: true, depthWrite: false
+        });
+        materials.push(mat);
+        updateAspect();
+        f.points = new THREE.Points(geo, mat);
         f.points.raycast = function () {};
         f.points.renderOrder = 12;
         globe.scene().add(f.points);
@@ -111,16 +169,23 @@
       // Son veriden bu yana geçen süre kadar ileri taşı (hız ve yöne göre)
       // Veri en fazla ~20 dk eski olabilir; daha uzun tahmin sapmayı büyütür
       var dt = Math.min(1500, (Date.now() - f.fetched) / 1000);
-      var pos = f.points.geometry.attributes.position.array, rad = Math.PI / 180;
+      var g = f.points.geometry;
+      var pos = g.attributes.position.array, dir = g.attributes.dir.array, rad = Math.PI / 180;
       for (var i = 0; i < f.data.length; i++) {
         var a = f.data[i], d = a[3] * dt, h = a[4] * rad;
+        var cosl = Math.max(0.15, Math.cos(a[1] * rad));
         var lat = a[1] + d * Math.cos(h) / 111320;
-        var lng = a[0] + d * Math.sin(h) / (111320 * Math.max(0.15, Math.cos(a[1] * rad)));
-        var c = globe.getCoords(lat, lng, 0.016 + Math.min(14000, a[2]) / 14000 * 0.012);
+        var lng = a[0] + d * Math.sin(h) / (111320 * cosl);
+        var alt = 0.016 + Math.min(14000, a[2]) / 14000 * 0.012;
+        var c = globe.getCoords(lat, lng, alt);
+        // Yön için ~5 km ileri bir nokta
+        var c2 = globe.getCoords(lat + 0.05 * Math.cos(h), lng + 0.05 * Math.sin(h) / cosl, alt);
         pos[i * 3] = c.x; pos[i * 3 + 1] = c.y; pos[i * 3 + 2] = c.z;
+        dir[i * 3] = c2.x - c.x; dir[i * 3 + 1] = c2.y - c.y; dir[i * 3 + 2] = c2.z - c.z;
       }
-      f.points.geometry.attributes.position.needsUpdate = true;
-      f.points.geometry.computeBoundingSphere();
+      g.attributes.position.needsUpdate = true;
+      g.attributes.dir.needsUpdate = true;
+      g.computeBoundingSphere();
     };
     f.load = function () {
       return fetch(f.url).then(function (r) {
@@ -151,8 +216,8 @@
     };
     return f;
   }
-  var planes = makeFleet("planes", "/api/planes", 0xffe8a8, 0.9);
-  var milair = makeFleet("milair", "/api/milair", 0xff5a5a, 1.6);
+  var planes = makeFleet("planes", "/api/planes", 0xffe3a0, 3.2);
+  var milair = makeFleet("milair", "/api/milair", 0xff5a5a, 4.5);
   setInterval(function () { planes.place(); milair.place(); }, 250);
 
   // ------------------------------------------------------------ depremler + ISS (globe.gl nokta katmanı)
