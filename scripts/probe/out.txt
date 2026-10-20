@@ -1,0 +1,30 @@
+=== GDELT
+sourcecountry:turkey 429 33
+    b'HTTP Error 429: Too Many Requests'
+"Turkey" sourcelang:english 429 33
+    b'HTTP Error 429: Too Many Requests'
+sourcecountry:greece 429 33
+    b'HTTP Error 429: Too Many Requests'
+sourcecountry:israel 429 33
+    b'HTTP Error 429: Too Many Requests'
+sourcecountry:TU 200 4271
+    20261017T120000Z haber7.com Turkish Turkey | Türkiyenin  büyük gardaş  olma derdi yok - Haber 7 Yazarı Sevil Nuriyeva İsmayılov
+    20261017T120000Z haber7.com Turkish Turkey | Cumhurbaşkanı Danışmanı Oğandan Terörsüz Türkiye mesajı
+    20261017T120000Z haber7.com Turkish Turkey | Sürücüler dikkat : Bu işareti gören hemen yapsın ! Çoğu kişi bilmiyordu
+    20261017T111500Z haber7.com Turkish Turkey | TYB İstanbul Şube Başkanı Bıyıklı  dan Cevat Özkaya için taziye mesajı
+=== YAHOO
+XU100.IS 200 BIST 100 TRY 11570.06 1792488804
+GD.AT 200 COMPOSITE INDEX EUR 2596.51 1792488788
+TA35.TA 200 TA-35 ILS 4215.6 1792488803
+^GSPC 200 S&P 500 USD 7690.73 1792442654
+^GDAXI 200 DAX P EUR 25133.49 1792488805
+000001.SS 200 SSE Composite Index CNY 3735.37 1792479624
+^BSESN 200 S&P BSE SENSEX INR 73852.9 1792404145
+^N225 200 Nikkei 225 JPY 64075.42 1792478702
+^MERV 200 MERVAL  2848945.2 1792182243
+^JN0U.JO 200 Top 40 USD Net TRI Index USD 6624.75 1792488804
+=== STOOQ
+^xu100 404 b'HTTP Error 404: Not Found'
+^ath 404 b'HTTP Error 404: Not Found'
+^ta35 404 b'HTTP Error 404: Not Found'
+^spx 404 b'HTTP Error 404: Not Found'
