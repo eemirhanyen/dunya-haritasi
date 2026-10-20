@@ -1,0 +1,7 @@
+{"error":"fetch failed"}
+HTTP 502 in 10.671520s
+
+{"error":"fetch failed"}
+HTTP 502 in 10.627610s
+
+direct opensky HTTP 200 1.457317s
