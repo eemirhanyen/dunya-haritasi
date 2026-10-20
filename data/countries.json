@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T00:13:51+00:00",
+  "generated_at": "2026-10-20T08:35:55+00:00",
   "method": {
     "description": "Her gösterge dünya genelinde yüzdelik dilime çevrilir (50 = dünya ortası). Beş boyut eşit ağırlıklıdır. Şu an skor yalnızca endeks yarısıdır; AI değerlendirmesi ikinci aşamada eklenecek.",
     "weights": {
