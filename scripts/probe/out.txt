@@ -1,0 +1,21 @@
+=== https://api.adsbdb.com/v0/callsign/AAL3210
+HTTP/2 200 
+content-type: application/json
+access-control-allow-origin: *
+x-content-type-options: nosniff
+{"response":{"flightroute":{"callsign":"AAL3210","callsign_icao":"AAL3210","callsign_iata":"AA3210","airline":{"name":"American Airlines","icao":"AAL","iata":"AA","country":"United States","country_iso":"US","callsign":"AMERICAN"},"origin":{"country_iso_name":"US","country_name":"United States","elevation":1135,"iata_code":"PHX","icao_code":"KPHX","latitude":33.4353,"longitude":-112.00591,"municipality":"Phoenix","name":"Phoenix Sky Harbor International Airport"},"destination":{"country_iso_name":"US","country_name":"United States","elevation":3959,"iata_code":"ELP","icao_code":"KELP","latitude":31.8072,"longitude":-106.378,"municipality":"El Paso","name":"El Paso International Airport"}}}}
+=== https://api.adsbdb.com/v0/callsign/THY1
+HTTP/2 200 
+content-type: application/json
+access-control-allow-origin: *
+x-content-type-options: nosniff
+{"response":{"flightroute":{"callsign":"THY1","callsign_icao":"THY1","callsign_iata":"TK1","airline":{"name":"Turkish Airlines","icao":"THY","iata":"TK","country":"Turkey","country_iso":"TR","callsign":"TURKAIR"},"origin":{"country_iso_name":"TR","country_name":"Turkey","elevation":325,"iata_code":"IST","icao_code":"LTFM","latitude":41.2613,"longitude":28.74195,"municipality":"Arnavutköy, Istanbul","name":"İstanbul Airport"},"destination":{"country_iso_name":"US","country_name":"United States","elevation":13,"iata_code":"JFK","icao_code":"KJFK","latitude":40.6398,"longitude":-73.7789,"municipality":"New York","name":"John F Kennedy International Airport"}}}}
+=== https://hexdb.io/api/v1/route/icao/AAL3210
+HTTP/2 404 
+content-type: application/json
+{"status":"404","error":"Route not found."}
+=== https://hexdb.io/callsign-route?callsign=THY1
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+access-control-allow-origin: *
+LTFM-KJFK
