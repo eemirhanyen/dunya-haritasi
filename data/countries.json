@@ -1,0 +1,490 @@
+{
+  "generated_at": "2026-10-20T00:06:22+00:00",
+  "method": {
+    "description": "Her gösterge dünya genelinde yüzdelik dilime çevrilir (50 = dünya ortası). Beş boyut eşit ağırlıklıdır. Şu an skor yalnızca endeks yarısıdır; AI değerlendirmesi ikinci aşamada eklenecek.",
+    "weights": {
+      "index": 1.0,
+      "ai": 0.0
+    },
+    "planned_weights": {
+      "index": 0.5,
+      "ai": 0.5
+    },
+    "thresholds": {
+      "red_below": 33.3,
+      "green_from": 66.7
+    },
+    "inflation_target": 2.0,
+    "universe_size": 217
+  },
+  "countries": {
+    "TUR": {
+      "iso3": "TUR",
+      "name": "Turkiye",
+      "dimensions": {
+        "governance": {
+          "label": "Yönetişim",
+          "score": 41.8,
+          "parts": [
+            {
+              "code": "GOV_WGI_GE.EST",
+              "label": "Hükümet etkinliği",
+              "value": 0.0289,
+              "year": 2025,
+              "percentile": 48.0
+            },
+            {
+              "code": "GOV_WGI_RQ.EST",
+              "label": "Düzenleyici kalite",
+              "value": -0.1719,
+              "year": 2025,
+              "percentile": 46.1
+            },
+            {
+              "code": "GOV_WGI_PV.EST",
+              "label": "Siyasi istikrar",
+              "value": -0.8812,
+              "year": 2025,
+              "percentile": 15.2
+            },
+            {
+              "code": "GOV_WGI_CC.EST",
+              "label": "Yolsuzluk kontrolü",
+              "value": 0.0564,
+              "year": 2006,
+              "percentile": 57.7
+            }
+          ],
+          "source": {
+            "name": "Dünya Bankası, Worldwide Governance Indicators",
+            "url": "https://www.worldbank.org/en/publication/worldwide-governance-indicators"
+          }
+        },
+        "economy": {
+          "label": "Ekonomi",
+          "score": 33.2,
+          "parts": [
+            {
+              "code": "NY.GDP.PCAP.PP.KD",
+              "label": "Kişi başı GSYH (SAGP, sabit 2021 $)",
+              "value": 37300.7486,
+              "year": 2025,
+              "percentile": 69.6
+            },
+            {
+              "code": "FP.CPI.TOTL.ZG",
+              "label": "Enflasyon (TÜFE, %)",
+              "value": 34.8812,
+              "year": 2025,
+              "percentile": 3.4
+            },
+            {
+              "code": "SL.UEM.TOTL.ZS",
+              "label": "İşsizlik (%)",
+              "value": 8.52,
+              "year": 2025,
+              "percentile": 26.5
+            }
+          ],
+          "source": {
+            "name": "Dünya Bankası, World Development Indicators",
+            "url": "https://data.worldbank.org/"
+          }
+        },
+        "human": {
+          "label": "İnsani gelişme",
+          "score": 73.8,
+          "parts": [
+            {
+              "code": "HDI",
+              "label": "İnsani Gelişme Endeksi",
+              "value": 0.853,
+              "year": 2023,
+              "percentile": 73.8
+            }
+          ],
+          "source": {
+            "name": "UNDP İnsani Gelişme Raporu (Our World in Data)",
+            "url": "https://ourworldindata.org/grapher/human-development-index"
+          }
+        },
+        "judiciary": {
+          "label": "Yargı bağımsızlığı",
+          "score": 22.1,
+          "parts": [
+            {
+              "code": "VDEM_JUCON",
+              "label": "Yargısal denetim endeksi (V-Dem)",
+              "value": 0.202,
+              "year": 2025,
+              "percentile": 22.1
+            }
+          ],
+          "source": {
+            "name": "V-Dem (Our World in Data)",
+            "url": "https://ourworldindata.org/grapher/judicial-constraints-on-the-executive-index"
+          }
+        },
+        "media": {
+          "label": "Medya bağımsızlığı",
+          "score": 9.9,
+          "parts": [
+            {
+              "code": "RSF",
+              "label": "Basın özgürlüğü skoru (RSF)",
+              "value": 27.94,
+              "year": 2026,
+              "percentile": 9.9
+            }
+          ],
+          "source": {
+            "name": "Sınır Tanımayan Gazeteciler (RSF), Dünya Basın Özgürlüğü Endeksi",
+            "url": "https://rsf.org/en/index"
+          }
+        }
+      },
+      "demographics": {
+        "SP.POP.TOTL": {
+          "label": "Nüfus",
+          "value": 85878556.0,
+          "year": 2025
+        },
+        "SP.DYN.LE00.IN": {
+          "label": "Doğuşta yaşam beklentisi (yıl)",
+          "value": 77.421,
+          "year": 2024
+        },
+        "SP.URB.TOTL.IN.ZS": {
+          "label": "Kentsel nüfus (%)",
+          "value": 89.494060002186,
+          "year": 2025
+        },
+        "SP.POP.0014.TO.ZS": {
+          "label": "0-14 yaş (%)",
+          "value": 21.0229035096437,
+          "year": 2025
+        },
+        "SP.POP.65UP.TO.ZS": {
+          "label": "65 yaş ve üstü (%)",
+          "value": 10.5709408311479,
+          "year": 2025
+        }
+      },
+      "index_score": 36.1,
+      "ai_score": null,
+      "final_score": 36.1
+    },
+    "GRC": {
+      "iso3": "GRC",
+      "name": "Greece",
+      "dimensions": {
+        "governance": {
+          "label": "Yönetişim",
+          "score": 64.5,
+          "parts": [
+            {
+              "code": "GOV_WGI_GE.EST",
+              "label": "Hükümet etkinliği",
+              "value": 0.3218,
+              "year": 2025,
+              "percentile": 62.2
+            },
+            {
+              "code": "GOV_WGI_RQ.EST",
+              "label": "Düzenleyici kalite",
+              "value": 0.416,
+              "year": 2025,
+              "percentile": 70.0
+            },
+            {
+              "code": "GOV_WGI_PV.EST",
+              "label": "Siyasi istikrar",
+              "value": 0.2767,
+              "year": 2025,
+              "percentile": 54.8
+            },
+            {
+              "code": "GOV_WGI_CC.EST",
+              "label": "Yolsuzluk kontrolü",
+              "value": 0.4727,
+              "year": 2006,
+              "percentile": 70.8
+            }
+          ],
+          "source": {
+            "name": "Dünya Bankası, Worldwide Governance Indicators",
+            "url": "https://www.worldbank.org/en/publication/worldwide-governance-indicators"
+          }
+        },
+        "economy": {
+          "label": "Ekonomi",
+          "score": 60.2,
+          "parts": [
+            {
+              "code": "NY.GDP.PCAP.PP.KD",
+              "label": "Kişi başı GSYH (SAGP, sabit 2021 $)",
+              "value": 38218.7216,
+              "year": 2025,
+              "percentile": 71.1
+            },
+            {
+              "code": "FP.CPI.TOTL.ZG",
+              "label": "Enflasyon (TÜFE, %)",
+              "value": 2.4816,
+              "year": 2025,
+              "percentile": 83.7
+            },
+            {
+              "code": "SL.UEM.TOTL.ZS",
+              "label": "İşsizlik (%)",
+              "value": 8.54,
+              "year": 2025,
+              "percentile": 25.9
+            }
+          ],
+          "source": {
+            "name": "Dünya Bankası, World Development Indicators",
+            "url": "https://data.worldbank.org/"
+          }
+        },
+        "human": {
+          "label": "İnsani gelişme",
+          "score": 82.6,
+          "parts": [
+            {
+              "code": "HDI",
+              "label": "İnsani Gelişme Endeksi",
+              "value": 0.908,
+              "year": 2023,
+              "percentile": 82.6
+            }
+          ],
+          "source": {
+            "name": "UNDP İnsani Gelişme Raporu (Our World in Data)",
+            "url": "https://ourworldindata.org/grapher/human-development-index"
+          }
+        },
+        "judiciary": {
+          "label": "Yargı bağımsızlığı",
+          "score": 60.1,
+          "parts": [
+            {
+              "code": "VDEM_JUCON",
+              "label": "Yargısal denetim endeksi (V-Dem)",
+              "value": 0.746,
+              "year": 2025,
+              "percentile": 60.1
+            }
+          ],
+          "source": {
+            "name": "V-Dem (Our World in Data)",
+            "url": "https://ourworldindata.org/grapher/judicial-constraints-on-the-executive-index"
+          }
+        },
+        "media": {
+          "label": "Medya bağımsızlığı",
+          "score": 53.4,
+          "parts": [
+            {
+              "code": "RSF",
+              "label": "Basın özgürlüğü skoru (RSF)",
+              "value": 55.05,
+              "year": 2026,
+              "percentile": 53.4
+            }
+          ],
+          "source": {
+            "name": "Sınır Tanımayan Gazeteciler (RSF), Dünya Basın Özgürlüğü Endeksi",
+            "url": "https://rsf.org/en/index"
+          }
+        }
+      },
+      "demographics": {
+        "SP.POP.TOTL": {
+          "label": "Nüfus",
+          "value": 10413962.0,
+          "year": 2025
+        },
+        "SP.DYN.LE00.IN": {
+          "label": "Doğuşta yaşam beklentisi (yıl)",
+          "value": 81.8390243902439,
+          "year": 2024
+        },
+        "SP.URB.TOTL.IN.ZS": {
+          "label": "Kentsel nüfus (%)",
+          "value": 79.2246082848537,
+          "year": 2025
+        },
+        "SP.POP.0014.TO.ZS": {
+          "label": "0-14 yaş (%)",
+          "value": 12.8514587384882,
+          "year": 2025
+        },
+        "SP.POP.65UP.TO.ZS": {
+          "label": "65 yaş ve üstü (%)",
+          "value": 24.3998585549859,
+          "year": 2025
+        }
+      },
+      "index_score": 64.2,
+      "ai_score": null,
+      "final_score": 64.2
+    },
+    "ISR": {
+      "iso3": "ISR",
+      "name": "Israel",
+      "dimensions": {
+        "governance": {
+          "label": "Yönetişim",
+          "score": 66.3,
+          "parts": [
+            {
+              "code": "GOV_WGI_GE.EST",
+              "label": "Hükümet etkinliği",
+              "value": 1.1918,
+              "year": 2025,
+              "percentile": 85.1
+            },
+            {
+              "code": "GOV_WGI_RQ.EST",
+              "label": "Düzenleyici kalite",
+              "value": 1.1257,
+              "year": 2025,
+              "percentile": 88.5
+            },
+            {
+              "code": "GOV_WGI_PV.EST",
+              "label": "Siyasi istikrar",
+              "value": -0.9136,
+              "year": 2025,
+              "percentile": 14.3
+            },
+            {
+              "code": "GOV_WGI_CC.EST",
+              "label": "Yolsuzluk kontrolü",
+              "value": 0.8388,
+              "year": 2006,
+              "percentile": 77.5
+            }
+          ],
+          "source": {
+            "name": "Dünya Bankası, Worldwide Governance Indicators",
+            "url": "https://www.worldbank.org/en/publication/worldwide-governance-indicators"
+          }
+        },
+        "economy": {
+          "label": "Ekonomi",
+          "score": 72.4,
+          "parts": [
+            {
+              "code": "NY.GDP.PCAP.PP.KD",
+              "label": "Kişi başı GSYH (SAGP, sabit 2021 $)",
+              "value": 48196.6345,
+              "year": 2025,
+              "percentile": 77.6
+            },
+            {
+              "code": "FP.CPI.TOTL.ZG",
+              "label": "Enflasyon (TÜFE, %)",
+              "value": 3.0414,
+              "year": 2025,
+              "percentile": 69.7
+            },
+            {
+              "code": "SL.UEM.TOTL.ZS",
+              "label": "İşsizlik (%)",
+              "value": 3.489,
+              "year": 2025,
+              "percentile": 69.8
+            }
+          ],
+          "source": {
+            "name": "Dünya Bankası, World Development Indicators",
+            "url": "https://data.worldbank.org/"
+          }
+        },
+        "human": {
+          "label": "İnsani gelişme",
+          "score": 86.3,
+          "parts": [
+            {
+              "code": "HDI",
+              "label": "İnsani Gelişme Endeksi",
+              "value": 0.919,
+              "year": 2023,
+              "percentile": 86.3
+            }
+          ],
+          "source": {
+            "name": "UNDP İnsani Gelişme Raporu (Our World in Data)",
+            "url": "https://ourworldindata.org/grapher/human-development-index"
+          }
+        },
+        "judiciary": {
+          "label": "Yargı bağımsızlığı",
+          "score": 76.7,
+          "parts": [
+            {
+              "code": "VDEM_JUCON",
+              "label": "Yargısal denetim endeksi (V-Dem)",
+              "value": 0.857,
+              "year": 2025,
+              "percentile": 76.7
+            }
+          ],
+          "source": {
+            "name": "V-Dem (Our World in Data)",
+            "url": "https://ourworldindata.org/grapher/judicial-constraints-on-the-executive-index"
+          }
+        },
+        "media": {
+          "label": "Medya bağımsızlığı",
+          "score": 36.4,
+          "parts": [
+            {
+              "code": "RSF",
+              "label": "Basın özgürlüğü skoru (RSF)",
+              "value": 46.46,
+              "year": 2026,
+              "percentile": 36.4
+            }
+          ],
+          "source": {
+            "name": "Sınır Tanımayan Gazeteciler (RSF), Dünya Basın Özgürlüğü Endeksi",
+            "url": "https://rsf.org/en/index"
+          }
+        }
+      },
+      "demographics": {
+        "SP.POP.TOTL": {
+          "label": "Nüfus",
+          "value": 10122800.0,
+          "year": 2025
+        },
+        "SP.DYN.LE00.IN": {
+          "label": "Doğuşta yaşam beklentisi (yıl)",
+          "value": 83.1975609756098,
+          "year": 2024
+        },
+        "SP.URB.TOTL.IN.ZS": {
+          "label": "Kentsel nüfus (%)",
+          "value": 91.5783060866328,
+          "year": 2025
+        },
+        "SP.POP.0014.TO.ZS": {
+          "label": "0-14 yaş (%)",
+          "value": 27.1639326374024,
+          "year": 2025
+        },
+        "SP.POP.65UP.TO.ZS": {
+          "label": "65 yaş ve üstü (%)",
+          "value": 12.6916264748788,
+          "year": 2025
+        }
+      },
+      "index_score": 67.6,
+      "ai_score": null,
+      "final_score": 67.6
+    }
+  }
+}
