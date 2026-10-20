@@ -2,9 +2,10 @@ name: Uçaklar
 
 on:
   workflow_dispatch:
-  # Zamanlama depo herkese açık olduktan sonra eklenecek (gizli depoda dakika kotası harcar):
-  # schedule:
-  #   - cron: "3-59/10 * * * *"
+  # ~10 dakikada bir (GitHub zamanlamayı yoğunlukta birkaç dakika geciktirebilir).
+  # Depo herkese açık olduğu için Actions dakikası harcamaz.
+  schedule:
+    - cron: "3-59/10 * * * *"
 
 permissions:
   contents: write
