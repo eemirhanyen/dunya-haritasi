@@ -11,6 +11,11 @@
     { id: "scores", key: "layerScores", on: true },
     { id: "military", key: "layerMilitary", on: false },
     { id: "labels", key: "layerLabels", on: true },
+    { id: "daynight", key: "layerDayNight", on: false, live: true },
+    { id: "planes", key: "layerPlanes", on: false, live: true },
+    { id: "milair", key: "layerMilAir", on: false, live: true },
+    { id: "quakes", key: "layerQuakes", on: false, live: true },
+    { id: "iss", key: "layerISS", on: false, live: true },
     { id: "clouds", key: "layerClouds", on: false },
     { id: "precip", key: "layerPrecip", on: false },
     { id: "temp", key: "layerTemp", on: false },
@@ -40,8 +45,13 @@
   function renderPanel() {
     var h = "";
     LAYERS.forEach(function (l) {
+      var cnt = "";
+      if (l.live && on[l.id] && window.LiveLayers && l.id !== "daynight" && l.id !== "iss") {
+        var n = window.LiveLayers.count(l.id);
+        cnt = n === undefined ? "…" : n === null ? "!" : APP_fmt(n);
+      }
       h += '<label class="ly-row"><input type="checkbox" data-id="' + l.id + '"' + (on[l.id] ? " checked" : "") +
-        "><span>" + esc(t(l.key)) + "</span></label>";
+        "><span>" + esc(t(l.key)) + "</span>" + (cnt ? '<em class="ly-cnt">' + esc(cnt) + "</em>" : "") + "</label>";
       if (l.id === "temp" && on.temp) {
         h += '<div class="ly-scale"><div class="ly-bar temp" dir="ltr"></div><div class="ly-ticks" dir="ltr"><span>−40°</span><span>0°</span><span>+40°C</span></div></div>';
       }
@@ -50,6 +60,9 @@
           "</span><span>" + esc(t("heavy")) + "</span></div></div>";
       }
     });
+    if (LAYERS.some(function (l) { return l.live && on[l.id] && l.id !== "daynight"; })) {
+      h += '<div class="ly-src">' + esc(t("srcLive")) + "</div>";
+    }
     if (wxActive()) {
       if (wx.error) {
         h += '<div class="ly-note">' + esc(t("wxError")) + "</div>";
@@ -97,8 +110,11 @@
     el.textContent = t("forecastAt", { d: f.format(d) });
   }
 
+  function APP_fmt(n) { return new Intl.NumberFormat(APP.locale()).format(n); }
+
   function toggle(id, value) {
     on[id] = value;
+    if (window.LiveLayers && window.LiveLayers.ids.indexOf(id) >= 0) window.LiveLayers.set(id, value);
     try { localStorage.setItem("layers", JSON.stringify(on)); } catch (e) { /* yok say */ }
     // Ülke skoru ve askeri güç aynı anda boyanamaz: biri seçilince diğeri kapanır
     if (id === "scores" && value) on.military = false;
@@ -362,6 +378,7 @@
   // ------------------------------------------------------------ açılış
   if (!THREE) {
     LAYERS = LAYERS.filter(function (l) { return ["scores", "military", "labels"].indexOf(l.id) >= 0; });
+    ["daynight", "planes", "milair", "quakes", "iss"].forEach(function (k) { on[k] = false; });
     ["clouds", "precip", "temp", "wind"].forEach(function (k) { on[k] = false; });
   }
   if (MOBILE) document.getElementById("layers-box").removeAttribute("open");
@@ -370,6 +387,16 @@
   APP.setLabelsVisible(on.labels);
   renderPanel();
   document.addEventListener("langchange", renderPanel);
+  document.addEventListener("livecounts", renderPanel);
+  if (THREE) {
+    document.addEventListener("liveready", function () {
+      window.LiveLayers.ids.forEach(function (id) { if (on[id]) window.LiveLayers.set(id, true); });
+      renderPanel();
+    });
+    var ls = document.createElement("script");
+    ls.src = "live.js";
+    document.body.appendChild(ls);
+  }
   if (wxActive()) ensureData().then(function () { setupMeshes(); drawSky(true); renderPanel(); });
   requestAnimationFrame(loop);
 })();

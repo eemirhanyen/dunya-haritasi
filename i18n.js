@@ -8,6 +8,14 @@ window.I18N = {
   rtl: ["ar", "fa"],
   dict: {
     tr: {
+      "layerDayNight": "Gece / gündüz",
+      "layerPlanes": "Uçaklar",
+      "layerMilAir": "Askeri uçaklar",
+      "layerQuakes": "Depremler (24 saat)",
+      "layerISS": "Uluslararası Uzay İstasyonu",
+      "issTip": "ISS · {a} km irtifa · {v} km/sa",
+      "depth": "derinlik",
+      "srcLive": "Uçaklar: OpenSky Network · Askeri: adsb.lol · Deprem: USGS",
       "layerMilitary": "Askeri güç",
       "military": "Askeri güç",
       "milIndex": "Askeri güç endeksi",
@@ -60,6 +68,14 @@ window.I18N = {
       src_media: "Sınır Tanımayan Gazeteciler (RSF), Dünya Basın Özgürlüğü Endeksi"
     },
     en: {
+      "layerDayNight": "Day / night",
+      "layerPlanes": "Aircraft",
+      "layerMilAir": "Military aircraft",
+      "layerQuakes": "Earthquakes (24 h)",
+      "layerISS": "International Space Station",
+      "issTip": "ISS · {a} km altitude · {v} km/h",
+      "depth": "depth",
+      "srcLive": "Aircraft: OpenSky Network · Military: adsb.lol · Earthquakes: USGS",
       "layerMilitary": "Military strength",
       "military": "Military strength",
       "milIndex": "Military strength index",
@@ -112,6 +128,14 @@ window.I18N = {
       src_media: "Reporters Without Borders (RSF), World Press Freedom Index"
     },
     es: {
+      "layerDayNight": "Día / noche",
+      "layerPlanes": "Aviones",
+      "layerMilAir": "Aviones militares",
+      "layerQuakes": "Terremotos (24 h)",
+      "layerISS": "Estación Espacial Internacional",
+      "issTip": "EEI · {a} km de altitud · {v} km/h",
+      "depth": "profundidad",
+      "srcLive": "Aviones: OpenSky Network · Militares: adsb.lol · Terremotos: USGS",
       "layerMilitary": "Poder militar",
       "military": "Poder militar",
       "milIndex": "Índice de poder militar",
@@ -161,6 +185,14 @@ window.I18N = {
       errData: "No se pudieron cargar los datos ({e})."
     },
     fr: {
+      "layerDayNight": "Jour / nuit",
+      "layerPlanes": "Avions",
+      "layerMilAir": "Avions militaires",
+      "layerQuakes": "Séismes (24 h)",
+      "layerISS": "Station spatiale internationale",
+      "issTip": "ISS · {a} km d'altitude · {v} km/h",
+      "depth": "profondeur",
+      "srcLive": "Avions : OpenSky Network · Militaires : adsb.lol · Séismes : USGS",
       "layerMilitary": "Puissance militaire",
       "military": "Puissance militaire",
       "milIndex": "Indice de puissance militaire",
@@ -210,6 +242,14 @@ window.I18N = {
       errData: "Impossible de charger les données ({e})."
     },
     de: {
+      "layerDayNight": "Tag / Nacht",
+      "layerPlanes": "Flugzeuge",
+      "layerMilAir": "Militärflugzeuge",
+      "layerQuakes": "Erdbeben (24 Std.)",
+      "layerISS": "Internationale Raumstation",
+      "issTip": "ISS · {a} km Höhe · {v} km/h",
+      "depth": "Tiefe",
+      "srcLive": "Flugzeuge: OpenSky Network · Militär: adsb.lol · Erdbeben: USGS",
       "layerMilitary": "Militärische Stärke",
       "military": "Militärische Stärke",
       "milIndex": "Index der militärischen Stärke",
@@ -259,6 +299,14 @@ window.I18N = {
       errData: "Daten konnten nicht geladen werden ({e})."
     },
     pt: {
+      "layerDayNight": "Dia / noite",
+      "layerPlanes": "Aviões",
+      "layerMilAir": "Aviões militares",
+      "layerQuakes": "Sismos (24 h)",
+      "layerISS": "Estação Espacial Internacional",
+      "issTip": "EEI · {a} km de altitude · {v} km/h",
+      "depth": "profundidade",
+      "srcLive": "Aviões: OpenSky Network · Militares: adsb.lol · Sismos: USGS",
       "layerMilitary": "Poder militar",
       "military": "Poder militar",
       "milIndex": "Índice de poder militar",
@@ -308,6 +356,14 @@ window.I18N = {
       errData: "Não foi possível carregar os dados ({e})."
     },
     it: {
+      "layerDayNight": "Giorno / notte",
+      "layerPlanes": "Aerei",
+      "layerMilAir": "Aerei militari",
+      "layerQuakes": "Terremoti (24 ore)",
+      "layerISS": "Stazione Spaziale Internazionale",
+      "issTip": "ISS · {a} km di quota · {v} km/h",
+      "depth": "profondità",
+      "srcLive": "Aerei: OpenSky Network · Militari: adsb.lol · Terremoti: USGS",
       "layerMilitary": "Potenza militare",
       "military": "Potenza militare",
       "milIndex": "Indice di potenza militare",
@@ -357,6 +413,14 @@ window.I18N = {
       errData: "Impossibile caricare i dati ({e})."
     },
     ru: {
+      "layerDayNight": "День / ночь",
+      "layerPlanes": "Самолёты",
+      "layerMilAir": "Военные самолёты",
+      "layerQuakes": "Землетрясения (24 ч)",
+      "layerISS": "Международная космическая станция",
+      "issTip": "МКС · высота {a} км · {v} км/ч",
+      "depth": "глубина",
+      "srcLive": "Самолёты: OpenSky Network · Военные: adsb.lol · Землетрясения: USGS",
       "layerMilitary": "Военная мощь",
       "military": "Военная мощь",
       "milIndex": "Индекс военной мощи",
@@ -406,6 +470,14 @@ window.I18N = {
       errData: "Не удалось загрузить данные ({e})."
     },
     ar: {
+      "layerDayNight": "الليل / النهار",
+      "layerPlanes": "الطائرات",
+      "layerMilAir": "الطائرات العسكرية",
+      "layerQuakes": "الزلازل (24 ساعة)",
+      "layerISS": "محطة الفضاء الدولية",
+      "issTip": "المحطة الفضائية · ارتفاع {a} كم · {v} كم/س",
+      "depth": "العمق",
+      "srcLive": "الطائرات: OpenSky Network · العسكرية: adsb.lol · الزلازل: USGS",
       "layerMilitary": "القوة العسكرية",
       "military": "القوة العسكرية",
       "milIndex": "مؤشر القوة العسكرية",
@@ -455,6 +527,14 @@ window.I18N = {
       errData: "تعذّر تحميل البيانات ({e})."
     },
     fa: {
+      "layerDayNight": "شب / روز",
+      "layerPlanes": "هواپیماها",
+      "layerMilAir": "هواپیماهای نظامی",
+      "layerQuakes": "زمین‌لرزه‌ها (۲۴ ساعت)",
+      "layerISS": "ایستگاه فضایی بین‌المللی",
+      "issTip": "ایستگاه فضایی · ارتفاع {a} کیلومتر · {v} کیلومتر/ساعت",
+      "depth": "عمق",
+      "srcLive": "هواپیماها: OpenSky Network · نظامی: adsb.lol · زمین‌لرزه: USGS",
       "layerMilitary": "قدرت نظامی",
       "military": "قدرت نظامی",
       "milIndex": "شاخص قدرت نظامی",
@@ -504,6 +584,14 @@ window.I18N = {
       errData: "داده‌ها بارگذاری نشد ({e})."
     },
     zh: {
+      "layerDayNight": "昼夜",
+      "layerPlanes": "飞机",
+      "layerMilAir": "军用飞机",
+      "layerQuakes": "地震（24 小时）",
+      "layerISS": "国际空间站",
+      "issTip": "国际空间站 · 高度 {a} 公里 · {v} 公里/小时",
+      "depth": "深度",
+      "srcLive": "飞机：OpenSky Network · 军机：adsb.lol · 地震：USGS",
       "layerMilitary": "军事实力",
       "military": "军事实力",
       "milIndex": "军事实力指数",
@@ -553,6 +641,14 @@ window.I18N = {
       errData: "无法加载数据（{e}）。"
     },
     ja: {
+      "layerDayNight": "昼 / 夜",
+      "layerPlanes": "航空機",
+      "layerMilAir": "軍用機",
+      "layerQuakes": "地震（24 時間）",
+      "layerISS": "国際宇宙ステーション",
+      "issTip": "ISS · 高度 {a} km · 時速 {v} km",
+      "depth": "深さ",
+      "srcLive": "航空機：OpenSky Network · 軍用機：adsb.lol · 地震：USGS",
       "layerMilitary": "軍事力",
       "military": "軍事力",
       "milIndex": "軍事力指数",
@@ -602,6 +698,14 @@ window.I18N = {
       errData: "データを読み込めませんでした（{e}）。"
     },
     ko: {
+      "layerDayNight": "낮 / 밤",
+      "layerPlanes": "항공기",
+      "layerMilAir": "군용기",
+      "layerQuakes": "지진(24시간)",
+      "layerISS": "국제우주정거장",
+      "issTip": "ISS · 고도 {a}km · 시속 {v}km",
+      "depth": "깊이",
+      "srcLive": "항공기: OpenSky Network · 군용기: adsb.lol · 지진: USGS",
       "layerMilitary": "군사력",
       "military": "군사력",
       "milIndex": "군사력 지수",
@@ -651,6 +755,14 @@ window.I18N = {
       errData: "데이터를 불러오지 못했습니다({e})."
     },
     hi: {
+      "layerDayNight": "दिन / रात",
+      "layerPlanes": "विमान",
+      "layerMilAir": "सैन्य विमान",
+      "layerQuakes": "भूकंप (24 घंटे)",
+      "layerISS": "अंतरराष्ट्रीय अंतरिक्ष स्टेशन",
+      "issTip": "ISS · {a} किमी ऊँचाई · {v} किमी/घंटा",
+      "depth": "गहराई",
+      "srcLive": "विमान: OpenSky Network · सैन्य: adsb.lol · भूकंप: USGS",
       "layerMilitary": "सैन्य शक्ति",
       "military": "सैन्य शक्ति",
       "milIndex": "सैन्य शक्ति सूचकांक",
@@ -700,6 +812,14 @@ window.I18N = {
       errData: "डेटा लोड नहीं हो सका ({e})।"
     },
     el: {
+      "layerDayNight": "Ημέρα / νύχτα",
+      "layerPlanes": "Αεροσκάφη",
+      "layerMilAir": "Στρατιωτικά αεροσκάφη",
+      "layerQuakes": "Σεισμοί (24 ώρες)",
+      "layerISS": "Διεθνής Διαστημικός Σταθμός",
+      "issTip": "ΔΔΣ · υψόμετρο {a} km · {v} km/h",
+      "depth": "βάθος",
+      "srcLive": "Αεροσκάφη: OpenSky Network · Στρατιωτικά: adsb.lol · Σεισμοί: USGS",
       "layerMilitary": "Στρατιωτική ισχύς",
       "military": "Στρατιωτική ισχύς",
       "milIndex": "Δείκτης στρατιωτικής ισχύος",
