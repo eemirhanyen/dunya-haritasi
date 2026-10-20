@@ -109,7 +109,8 @@
     f.place = function () {
       if (!f.points || !on[id]) return;
       // Son veriden bu yana geçen süre kadar ileri taşı (hız ve yöne göre)
-      var dt = Math.min(600, (Date.now() - f.fetched) / 1000);
+      // Veri en fazla ~20 dk eski olabilir; daha uzun tahmin sapmayı büyütür
+      var dt = Math.min(1500, (Date.now() - f.fetched) / 1000);
       var pos = f.points.geometry.attributes.position.array, rad = Math.PI / 180;
       for (var i = 0; i < f.data.length; i++) {
         var a = f.data[i], d = a[3] * dt, h = a[4] * rad;

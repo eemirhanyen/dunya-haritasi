@@ -1,0 +1,40 @@
+name: Uçaklar
+
+on:
+  workflow_dispatch:
+  # Zamanlama depo herkese açık olduktan sonra eklenecek (gizli depoda dakika kotası harcar):
+  # schedule:
+  #   - cron: "3-59/10 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: planes
+  cancel-in-progress: true
+
+jobs:
+  planes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - name: OpenSky verisini çek
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
+        run: |
+          mkdir -p /tmp/live
+          python scripts/fetch_planes.py /tmp/live/planes.json
+      # Geçmişi tutulmayan "live" dalına tek commit olarak yaz (depo büyümez)
+      - name: live dalına yaz
+        run: |
+          cd /tmp/live
+          git init -q -b live
+          git config user.name "dunya-haritasi-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add planes.json
+          git commit -q -m "Uçaklar $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" live
