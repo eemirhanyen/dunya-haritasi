@@ -23,6 +23,11 @@
     </label>
   </header>
 
+  <details class="layers-box" id="layers-box" open>
+    <summary data-i18n="layers">Katmanlar</summary>
+    <div id="layers"></div>
+  </details>
+
   <div class="legend" aria-label="Renk açıklaması">
     <div class="grad-title" data-i18n="gradTitle">Skor · dünya yüzdelik dilimi</div>
     <div class="grad" dir="ltr"></div>
@@ -40,8 +45,24 @@
 
   <div class="error" id="error" hidden></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js"></script>
-  <script src="i18n.js"></script>
-  <script src="app.js"></script>
+  <script type="module">
+    // three.js'i globe.gl'den önce yükleyip ortak kullan: hava katmanları aynı sahneye eklenir.
+    // three yüklenemezse site hava katmanları olmadan açılır.
+    try {
+      window.THREE = await import("https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.min.js");
+    } catch (e) {
+      console.warn("three.js yüklenemedi; hava katmanları kapalı", e);
+    }
+    function load(src) {
+      return new Promise(function (res) {
+        var s = document.createElement("script");
+        s.src = src; s.onload = res; s.onerror = res;
+        document.body.appendChild(s);
+      });
+    }
+    await load("https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js");
+    await load("i18n.js");
+    await load("app.js");
+  </script>
 </body>
 </html>

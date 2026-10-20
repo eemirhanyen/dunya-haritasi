@@ -58,6 +58,15 @@ ECON = {
     "SL.UEM.TOTL.ZS": "İşsizlik (%)",
 }
 
+# Askeri güç: genel skora KATILMAZ, ayrı gösterge ve katman olarak sunulur.
+# SIPRI askeri harcama verisi ve silahlı kuvvetler personeli (Dünya Bankası üzerinden).
+MIL = {
+    "MS.MIL.XPND.CD": "Askeri harcama (cari $)",
+    "MS.MIL.TOTL.P1": "Silahlı kuvvetler personeli",
+}
+MIL_INFO = {"MS.MIL.XPND.GD.ZS": "Askeri harcama (GSYH %)"}
+MIL_MAX_AGE = 10   # personel verisi yavaş güncelleniyor
+
 DEMO = {
     "SP.POP.TOTL": "Nüfus",
     "SP.DYN.LE00.IN": "Doğuşta yaşam beklentisi (yıl)",
@@ -127,13 +136,13 @@ def wb_countries():
     return out
 
 
-def wb_indicator(code, source=None):
+def wb_indicator(code, source=None, max_age=None):
     """Her ülke için son MAX_AGE_YEARS içindeki en güncel değer: {iso: (değer, yıl)}.
 
     mrnev parametresi bazı WGI serilerinde çok eski yıl döndürdüğü için
     kullanılmıyor; yıl aralığı açıkça isteniyor ve en güncel yıl seçiliyor.
     """
-    y1 = CURRENT_YEAR - MAX_AGE_YEARS
+    y1 = CURRENT_YEAR - (max_age or MAX_AGE_YEARS)
     out = {}
     page, pages = 1, 1
     while page <= pages:
@@ -246,6 +255,18 @@ def main():
         raw[code] = wb_indicator(code)
         labels[code] = label
 
+    log("Askeri veriler çekiliyor...")
+    mil_raw = {}
+    for code in list(MIL) + list(MIL_INFO):
+        try:
+            mil_raw[code] = wb_indicator(code, max_age=MIL_MAX_AGE)
+            mil_raw[code] = {i: v for i, v in mil_raw[code].items() if i in universe}
+            ys = sorted({y for _, y in mil_raw[code].values()})
+            log(f"  {code}: {len(mil_raw[code])} ülke, yıllar {ys[0] if ys else '-'}-{ys[-1] if ys else '-'}")
+        except RuntimeError as e:
+            log(f"  UYARI: {e}")
+    mil_pct = {code: percentile_map({i: v[0] for i, v in mil_raw.get(code, {}).items()}) for code in MIL}
+
     log("Demografi çekiliyor...")
     demo_raw = {}
     for code, label in DEMO.items():
@@ -344,6 +365,24 @@ def main():
             entry["missing"] = missing
         else:
             entry["index_score"] = round(mean(dim_scores), 1)
+        # Askeri güç: harcama zorunlu, personel varsa ortalamaya girer
+        mparts = []
+        for code, label in MIL.items():
+            if iso in mil_pct.get(code, {}):
+                v, y = mil_raw[code][iso]
+                mparts.append({"code": code, "label": label, "value": round(v, 2), "year": y,
+                               "percentile": round(mil_pct[code][iso], 1)})
+        for code, label in MIL_INFO.items():
+            if iso in mil_raw.get(code, {}):
+                v, y = mil_raw[code][iso]
+                mparts.append({"code": code, "label": label, "value": round(v, 2), "year": y, "percentile": None})
+        if any(p["code"] == "MS.MIL.XPND.CD" for p in mparts):
+            scored = [p["percentile"] for p in mparts if p["percentile"] is not None]
+            entry["military"] = {
+                "score": round(mean(scored), 1), "parts": mparts,
+                "source": {"name": "SIPRI ve IISS (Dünya Bankası, World Development Indicators)",
+                           "url": "https://data.worldbank.org/indicator/MS.MIL.XPND.CD"},
+            }
         entry["ai_score"] = None
         entry["final_score"] = entry["index_score"]
         result[iso] = entry

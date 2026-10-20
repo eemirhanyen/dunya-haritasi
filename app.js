@@ -5,9 +5,11 @@
   var COLORS = { none: "#2a3347" };
   // Kademeli renk: 0 kırmızı, 50 sarı (dünya ortası), 100 yeşil
   var STOPS = [[0, [239, 83, 80]], [50, [242, 201, 76]], [100, [52, 199, 123]]];
+  // Askeri güç iyi/kötü değil, büyüklük gösterir: tek tonlu mor skala
+  var MIL_STOPS = [[0, [52, 62, 98]], [50, [118, 96, 222]], [100, [236, 122, 252]]];
   var I = window.I18N;
 
-  var state = { data: null, geo: null, selected: null, hover: null, lang: "en" };
+  var state = { data: null, geo: null, selected: null, hover: null, lang: "en", mode: "scores" };
   var fmt = {};
 
   // ------------------------------------------------------------ dil
@@ -56,7 +58,9 @@
     applyStatic();
     if (state.data) updateDate();
     if (globe) refresh(true);
+    labelEls.forEach(function (x) { x[0].textContent = nameOf(x[1]); });
     if (state.selected) renderPanel(countryOf(state.selected));
+    document.dispatchEvent(new Event("langchange"));
   }
   function applyStatic() {
     Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function (el) {
@@ -95,10 +99,11 @@
     var n = parseInt(hex.slice(1), 16);
     return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
   }
-  function scoreColor(score, alpha) {
+  function scoreColor(score, alpha, stops) {
     if (score == null) return alpha == null ? COLORS.none : hexAlpha(COLORS.none, alpha);
+    stops = stops || STOPS;
     var s = Math.max(0, Math.min(100, score)), i = s <= 50 ? 0 : 1;
-    var a = STOPS[i], b = STOPS[i + 1], k = (s - a[0]) / (b[0] - a[0]);
+    var a = stops[i], b = stops[i + 1], k = (s - a[0]) / (b[0] - a[0]);
     var c = [0, 1, 2].map(function (j) { return Math.round(a[1][j] + (b[1][j] - a[1][j]) * k); });
     return "rgba(" + c.join(",") + "," + (alpha == null ? 1 : alpha) + ")";
   }
@@ -109,14 +114,24 @@
     var c = countryOf(feat);
     return c && c.final_score != null ? c : null;
   }
-  function cName(c, fallback) {
-    if (c && c.iso2 && fmt.region) {
-      try { var n = fmt.region.of(c.iso2); if (n && n !== c.iso2) return n; } catch (e) { /* yok */ }
+  // Etkin boyama moduna göre ülkenin değeri ve rengi
+  function modeValue(c) {
+    if (!c) return null;
+    if (state.mode === "military") return c.military ? c.military.score : null;
+    return c.final_score;
+  }
+  function modeColor(v, alpha) {
+    return scoreColor(v, alpha, state.mode === "military" ? MIL_STOPS : STOPS);
+  }
+  function cName(c, fallback, iso2) {
+    var code = (c && c.iso2) || iso2;
+    if (code && fmt.region) {
+      try { var n = fmt.region.of(code); if (n && n !== code) return n; } catch (e) { /* yok */ }
     }
     return (c && c.name) || fallback;
   }
   function nameOf(feat) {
-    return cName(countryOf(feat), feat.properties.name);
+    return cName(countryOf(feat), feat.properties.name, feat.properties.iso2);
   }
   function fmtDate(iso, withYear) {
     if (!iso) return "";
@@ -142,6 +157,14 @@
     el.textContent = msg;
     el.hidden = false;
   }
+  function updateLegend() {
+    var lg = document.querySelector(".legend");
+    lg.classList.toggle("dim", state.mode === "none");
+    lg.classList.toggle("mil", state.mode === "military");
+    var title = lg.querySelector(".grad-title");
+    title.setAttribute("data-i18n", state.mode === "military" ? "milLegend" : "gradTitle");
+    title.textContent = t(title.getAttribute("data-i18n"));
+  }
   function updateDate() {
     document.getElementById("updated").textContent =
       t("dataAsOf", { d: fmtDate(state.data.built_at || state.data.generated_at, true) });
@@ -149,6 +172,12 @@
 
   // ------------------------------------------------------------ küre
   var globe;
+  var labelEls = [], labelRank = 3, showLabels = true;
+  function applyLabelVisibility(el) {
+    var ok = showLabels && el.dataset.front !== "0" && +el.dataset.rank <= labelRank;
+    // display'ı küre çizici her karede kendisi ayarlıyor; bu yüzden visibility kullanılıyor
+    el.style.visibility = ok ? "visible" : "hidden";
+  }
   function initGlobe() {
     var el = document.getElementById("globe");
     globe = Globe()(el)
@@ -157,25 +186,27 @@
       .showAtmosphere(true)
       .atmosphereColor("#4b6cb7")
       .atmosphereAltitude(0.18)
-      .polygonsData(state.geo.features.filter(function (f) { return f.properties.iso !== "ATA"; }))
+      .polygonsData(state.geo.features)
       .polygonAltitude(function (f) {
         if (f === state.selected) return 0.04;
         if (f === state.hover && countryOf(f)) return 0.025;
-        return scoredOf(f) ? 0.012 : 0.006;
+        return state.mode !== "none" && modeValue(countryOf(f)) != null ? 0.012 : 0.006;
       })
       .polygonCapColor(function (f) {
-        var c = scoredOf(f);
-        if (!c) return f === state.hover && countryOf(f) ? "#3a4766" : COLORS.none;
-        return scoreColor(c.final_score, f === state.hover || f === state.selected ? 1 : 0.9);
+        if (state.mode === "none") return f === state.hover && countryOf(f) ? "rgba(255,255,255,0.18)" : "rgba(14,22,38,0.35)";
+        var v = modeValue(countryOf(f));
+        if (v == null) return f === state.hover && countryOf(f) ? "#3a4766" : COLORS.none;
+        return modeColor(v, f === state.hover || f === state.selected ? 1 : 0.9);
       })
       .polygonSideColor(function (f) {
-        var c = scoredOf(f);
-        return c ? scoreColor(c.final_score, 0.35) : "rgba(20,28,45,0.6)";
+        if (state.mode === "none") return "rgba(0,0,0,0)";
+        var v = modeValue(countryOf(f));
+        return v != null ? modeColor(v, 0.35) : "rgba(20,28,45,0.6)";
       })
-      .polygonStrokeColor(function () { return "rgba(7,11,20,0.9)"; })
+      .polygonStrokeColor(function () { return state.mode !== "none" ? "rgba(7,11,20,0.9)" : "rgba(200,215,240,0.35)"; })
       .polygonLabel(function (f) {
-        var c = countryOf(f);
-        var s = c && c.final_score != null ? " · <b>" + fmt.n0.format(c.final_score) + "</b>" : (c ? " · " + esc(t("noData")) : "");
+        var c = countryOf(f), v = modeValue(c);
+        var s = v != null ? " · <b>" + fmt.n0.format(v) + "</b>" : (c ? " · " + esc(t("noData")) : "");
         return '<div class="tip" dir="auto">' + esc(nameOf(f)) + s + "</div>";
       })
       .onPolygonHover(function (f) {
@@ -188,7 +219,31 @@
         select(f);
       })
       .onGlobeClick(function () { closePanel(); })
-      .polygonsTransitionDuration(250);
+      .polygonsTransitionDuration(250)
+      // Ülke adları: uzaktan yalnızca büyük ülkeler, yaklaştıkça küçükler
+      .htmlElementsData(state.geo.features)
+      .htmlLat(function (f) { return f.properties.ly; })
+      .htmlLng(function (f) { return f.properties.lx; })
+      .htmlAltitude(0.015)
+      .htmlElement(function (f) {
+        var el = document.createElement("div");
+        el.className = "clabel r" + Math.min(6, f.properties.rank || 6);
+        el.textContent = nameOf(f);
+        el.dataset.rank = f.properties.rank || 9;
+        labelEls.push([el, f]);
+        return el;
+      })
+      .htmlElementVisibilityModifier(function (el, visible) {
+        el.dataset.front = visible ? "1" : "0";
+        applyLabelVisibility(el);
+      })
+      .onZoom(function (pov) {
+        var r = pov.altitude > 2.2 ? 2 : pov.altitude > 1.5 ? 3 : pov.altitude > 1.0 ? 4 : pov.altitude > 0.6 ? 5 : 9;
+        if (r !== labelRank) {
+          labelRank = r;
+          labelEls.forEach(function (x) { applyLabelVisibility(x[0]); });
+        }
+      });
 
     var mat = globe.globeMaterial();
     mat.color.set("#0e1626");
@@ -211,6 +266,25 @@
     globe.polygonAltitude(globe.polygonAltitude()).polygonCapColor(globe.polygonCapColor());
     if (labels) globe.polygonLabel(globe.polygonLabel());
   }
+
+  // weather.js ve ileride eklenecek katmanlar için
+  window.WorldApp = {
+    t: function (k, v) { return t(k, v); },
+    locale: function () { return state.lang === "zh" ? "zh-CN" : state.lang; },
+    globe: function () { return globe; },
+    setLabelsVisible: function (v) {
+      showLabels = v;
+      labelEls.forEach(function (x) { applyLabelVisibility(x[0]); });
+    },
+    // "scores" | "military" | "none"
+    setColorMode: function (m) {
+      state.mode = m;
+      updateLegend();
+      if (!globe) return;
+      globe.polygonSideColor(globe.polygonSideColor()).polygonStrokeColor(globe.polygonStrokeColor());
+      refresh(true);
+    }
+  };
 
   function centroid(f) {
     // Kaba merkez: en büyük halkanın ortalaması
@@ -259,6 +333,13 @@
       case "RSF": return fmt.n1.format(v);
       default: return fmt.n2.format(v); // WGI: yaklaşık -2,5 … +2,5; HDI ve V-Dem 0-1
     }
+  }
+  function fmtMil(p) {
+    if (p.code === "MS.MIL.XPND.CD") {
+      return new Intl.NumberFormat(window.WorldApp.locale(), { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(p.value);
+    }
+    if (p.code === "MS.MIL.XPND.GD.ZS") return fmt.pct.format(p.value / 100);
+    return fmt.n0.format(p.value);
   }
   function fmtDemo(code, v) {
     if (code === "SP.POP.TOTL") return fmt.n0.format(v);
@@ -342,6 +423,24 @@
         esc(t("src_" + k) === "src_" + k ? d.source.name : t("src_" + k)) + "</a></div>";
       h += "</div></details>";
     });
+
+    if (c.military) {
+      var M = c.military;
+      h += "<h3>" + esc(t("military")) + "</h3>";
+      h += '<details class="dim mil"><summary>';
+      h += '<div class="dim-top"><span>' + esc(t("milIndex")) + "</span><b>" + fmt.n1.format(M.score) + "</b></div>";
+      h += '<div class="bar"><i style="width:' + M.score + "%;background:" + scoreColor(M.score, null, MIL_STOPS) + '"></i></div>';
+      h += '</summary><div class="parts"><table>';
+      M.parts.forEach(function (p) {
+        h += "<tr><td>" + esc(t(p.code)) + ' <span style="opacity:.6">(' + p.year + ")</span></td>" +
+          '<td dir="ltr">' + fmtMil(p) + '</td><td dir="ltr">' + (p.percentile == null ? "" : fmt.n0.format(p.percentile) + "/100") + "</td></tr>";
+      });
+      h += "</table>";
+      h += '<div class="src">' + esc(t("source")) + ': <a href="' + esc(M.source.url) + '" target="_blank" rel="noopener">' +
+        esc(t("src_military")) + "</a></div>";
+      h += "</div></details>";
+      h += '<div class="note" style="margin-top:6px">' + esc(t("milNote")) + "</div>";
+    }
 
     var demoKeys = Object.keys(c.demographics || {});
     if (demoKeys.length) {
@@ -437,6 +536,9 @@
     state.geo = res[1];
     updateDate();
     initGlobe();
+    var s = document.createElement("script");
+    s.src = "weather.js";
+    document.body.appendChild(s);
   }).catch(function (e) {
     showError(t("errData", { e: e.message }));
   });

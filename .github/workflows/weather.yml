@@ -3,9 +3,9 @@ name: Hava durumu
 on:
   workflow_dispatch:
   # GFS her 6 saatte bir çalışır, tahminler ~4 saat sonra yayımlanır.
-  # 04:40, 10:40, 16:40, 22:40 UTC
+  # Depo büyümesini sınırlamak için günde 2 kez: 04:40 ve 16:40 UTC
   schedule:
-    - cron: "40 4,10,16,22 * * *"
+    - cron: "40 4,16 * * *"
 
 permissions:
   contents: write
