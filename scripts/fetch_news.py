@@ -20,7 +20,8 @@ sorgu sınırı yok, veri aynı.
 Borsa verisi markets.json'daki ana endeksler için Yahoo Finance grafik uç
 noktasından çekilir.
 
-Çıktı: data/news.json
+Çıktı: data/news.json (yalnızca iş akışı içinde, depoya yazılmaz) ve
+sitenin okuduğu data/news/<ÜLKE>.json
 """
 
 import concurrent.futures as cf
@@ -231,6 +232,8 @@ def collect(targets_fips, fips_to_iso, dom_map, iso2_to_fips):
                 tone_sum[iso] += tone
                 tone_n[iso] += 1
             local = src == fc
+            if not local and n < 2:
+                continue    # başka ülkenin basınında tek geçen ad: çoğunlukla ilgisiz
             score = min(n, 10) * (2 if primary else 1) + size_bonus + (1 if when >= cutoff_recent else 0)
             if not local and lang == "en":
                 score += 2
@@ -348,6 +351,21 @@ def main():
         "countries": out,
     }, open(OUT_PATH, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     log(f"Yazıldı: {OUT_PATH} ({os.path.getsize(OUT_PATH) // 1024} KB)")
+
+    # Site ülke başına küçük dosya okur (tüm dosya mobilde ağır)
+    per_dir = os.path.join(ROOT, "data", "news")
+    os.makedirs(per_dir, exist_ok=True)
+    keep = set()
+    for iso, e in out.items():
+        keep.add(f"{iso}.json")
+        json.dump({"generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+                   "hours": HOURS, "world_tone": world_tone, **e},
+                  open(os.path.join(per_dir, f"{iso}.json"), "w", encoding="utf-8"),
+                  ensure_ascii=False, separators=(",", ":"))
+    if not only:
+        for f in os.listdir(per_dir):
+            if f.endswith(".json") and f not in keep:
+                os.remove(os.path.join(per_dir, f))
 
 
 if __name__ == "__main__":

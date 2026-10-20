@@ -257,7 +257,7 @@
 
     document.getElementById("panel-body").innerHTML = h;
     document.getElementById("panel").scrollTop = 0;
-    loadNews().then(function (news) {
+    loadNews(c.iso3).then(function (news) {
       if (state.selected && countryOf(state.selected) === c) renderLive(c, news);
     });
   }
@@ -292,20 +292,20 @@
     return '<span class="' + cls + '">' + (x > 0 ? "+" : "") + nf2.format(x) + "%</span>";
   }
 
-  var newsPromise = null;
-  function loadNews() {
-    if (!newsPromise) {
-      newsPromise = fetch("data/news.json?t=" + Math.floor(Date.now() / 3600000))
+  var newsCache = {};
+  function loadNews(iso) {
+    if (!newsCache[iso]) {
+      newsCache[iso] = fetch("data/news/" + iso + ".json?t=" + Math.floor(Date.now() / 3600000))
         .then(function (r) { return r.ok ? r.json() : null; })
         .catch(function () { return null; });
     }
-    return newsPromise;
+    return newsCache[iso];
   }
 
   function renderLive(c, news) {
     var box = document.getElementById("live");
     if (!box) return;
-    var n = news && news.countries && news.countries[c.iso3];
+    var n = news && (news.local || news.intl) ? news : null;
     var h = "";
     if (n && n.market) {
       var m = n.market, up = (m.chg_1m || 0) >= 0;
