@@ -1,0 +1,37 @@
+=== https://opensky-network.org/api/states/all
+HTTP/2 200 
+content-type: application/json
+vary: Access-Control-Request-Method
+vary: Access-Control-Request-Headers
+access-control-allow-origin: https://opensky-network.org
+x-rate-limit-remaining: 396
+x-content-type-options: nosniff
+body bytes: 1310848
+{"time":1792499045,"states":[["ab1644","UAL1085 ","United States",1792499045,1792499045,-96.3279,29.3453,6720.84,false,205.22,29.26,-10.08,null,7109.46,"4242",false,0],["a1abf7","N2069Y  ","United States",1792499036,1792499043,-99.8002,31.6054,2758.44,false,109.1,247.55,-2.93,null,2903.22,"2144",tru
+=== https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson
+HTTP/2 200 
+content-type: application/json; charset=utf-8
+access-control-allow-origin: *
+access-control-max-age: 86400
+x-content-type-options: nosniff
+access-control-allow-headers: *
+access-control-allow-methods: GET, OPTIONS
+body bytes: 33111
+{"type":"FeatureCollection","metadata":{"generated":1792499043000,"url":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson","title":"USGS Magnitude 2.5+ Earthquakes, Past Day","status":200,"api":"2.7.0","count":46},"features":[{"type":"Feature","properties":{"mag":5,"place":"
+=== https://api.wheretheiss.at/v1/satellites/25544
+HTTP/1.1 200 OK
+X-Rate-Limit-Limit: 350
+X-Rate-Limit-Remaining: 349
+X-Rate-Limit-Interval: 5 minutes
+Access-Control-Allow-Origin: *
+Content-Length: 310
+Content-Type: application/json
+body bytes: 310
+{"name":"iss","id":25544,"latitude":-51.321306043927,"longitude":105.30366717259,"altitude":432.8679011585,"velocity":27555.46859948,"visibility":"daylight","footprint":4572.3586116104,"timestamp":1792499053,"daynum":2461334.0168171,"solar_lat":-10.448003235389,"solar_lon":350.1394603395,"units":"ki
+=== https://api.adsb.lol/v2/mil
+HTTP/2 200 
+content-type: application/json
+content-length: 115370
+body bytes: 115370
+{"ac":[
+{"hex":"ae5f11","type":"adsb_icao","flight":"KING54  ","r":"14-5864","t":"C30J","dbFlags":1,"alt_baro":900,"alt_geom":775,"gs":172.5,"track":4.32,"true_heading":337.50,"geom_rate":1024,"squawk":"3211","emergency":"none","category":"A3","nav_qnh":1012.0,"nav_altitude_fms":3008,"nav_heading":1
