@@ -340,7 +340,8 @@
     .pointColor(function (d) {
       if (d.kind === "iss") return "#7ef9ff";
       if (d.kind === "event") return EV_COLORS[d.cat];
-      return d.mag >= 6 ? "#ff3b3b" : d.mag >= 4.5 ? "#ff8a3d" : "#ffd166";
+      // Depremler kırmızı tonlarda: büyüdükçe koyulaşır
+      return d.mag >= 6 ? "#d90000" : d.mag >= 4.5 ? "#ff1f1f" : "#ff5a5a";
     })
     .pointsMerge(false)
     .pointLabel(function (d) {
@@ -358,7 +359,7 @@
         (d.depth != null ? " · " + esc(t("depth")) + " " + nfmt(d.depth) + " km" : "") + "</div>";
     })
     .ringLat("lat").ringLng("lng")
-    .ringColor(function (d) { return function (k) { return "rgba(255,90,60," + (1 - k) + ")"; }; })
+    .ringColor(function (d) { return function (k) { return "rgba(255,30,30," + (1 - k) + ")"; }; })
     .ringMaxRadius(function (d) { return 1.5 + (d.mag - 4.5) * 1.6; })
     .ringPropagationSpeed(2.2)
     .ringRepeatPeriod(1400)
