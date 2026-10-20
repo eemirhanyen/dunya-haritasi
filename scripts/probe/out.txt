@@ -1,23 +1,43 @@
-=== GDELT freshness
-sourcecountry:TU 24h 200 5 ['20261020T091500Z', '20261020T091500Z', '20261020T091500Z', '20261020T091500Z', '20261020T091500Z']
-sourcecountry:TU 72h 429 b'HTTP Error 429: Too Many Requests'
-sourcecountry:US 24h 429 b'HTTP Error 429: Too Many Requests'
-sourcecountry:US 72h 429 b'HTTP Error 429: Too Many Requests'
-lastupdate 200 b'92410 d8d8937ff7f0ade915e270bcef7d56b2 http://data.gdeltproject.org/gdeltv2/20261020100000.export.CSV.zip\n126931 2496b514ca9240d47f82d3938f220855 http://data.gdeltproject.org/gdeltv2/20261020100000.mentions.CSV.zip\n5081810 d85072ebc609074f77b412811d9a3296 http://data.gdeltproject.org/gdeltv2/2026102'
-=== GOOGLE NEWS RSS
-TR top 200 34
-    Tue, 20 Oct 2026 06:39:49 GMT | Üsküdar'da AKP ve MHP'nin adayı belli oldu - Sözcü Gazetesi
-    Tue, 20 Oct 2026 04:00:00 GMT | Aldatılan eş ihbar etti... ‘Yumurta’ çetesi çökertildi - Hürriyet
-    Tue, 20 Oct 2026 07:35:00 GMT | Devlet Bahçeli: Fon soruşturmaları aklanma, arınma fırsatı olarak değerlendirilmeli - birgun.net
-GR top 200 30
-    Tue, 20 Oct 2026 03:21:20 GMT | Τραμπ: Κάνει τις ταραχές στη Γαλλία προεκλογικό όπλο – «Το Παρίσι θα γίνει πολύ σύντομα μουσουλμανικ
-    Tue, 20 Oct 2026 05:36:40 GMT | Εγκαινιάζεται σήμερα από τον Κυριάκο Μητσοτάκη το νέο έξυπνο κτίριο του ΕΚΕΦΕ «Δημόκριτος» - ProtoTh
-    Tue, 20 Oct 2026 05:05:37 GMT | Συλλαλητήριο: Σκηνές αντίστασης από τη γενιά του «δεν πάει άλλο» – Το αγωνιστικό «ραντεβού» σε Σύντα
-IL top 200 34
-    Tue, 20 Oct 2026 08:28:00 GMT | חדד: נתניהו לא הוזהר שייחקר על שוחד; מנדלבליט: הנוסח היה פתלתל - mako
-    Mon, 19 Oct 2026 23:33:14 GMT | בניגוד לטראמפ, ואנס מסרב להביע תמיכה בנתניהו: "לא מתערב בבחירות בישראל" - YNET
-    Tue, 20 Oct 2026 07:48:19 GMT | השר קיש מבטל את מבחני המיצ"ב ומגדיר מחדש את רף הלימודים: "יוגדר רף בסיס חינוכי" - i24NEWS
-Turkey intl 200 100
-    Tue, 20 Oct 2026 09:06:00 GMT | Pennsylvania man makes history in Alberta with the first fall turkey - Erie Times-News
-    Mon, 19 Oct 2026 19:31:34 GMT | Brazil detects Newcastle disease at turkey farm, raising export concerns - Reuters
-    Tue, 20 Oct 2026 07:22:57 GMT | The Predator on the Bosphorus: How Turkey Is Turning from a Hostile State into an Enemy - Jerusalem 
+http://data.gdeltproject.org/gdeltv2/lastupdate.txt
+92410 d8d8937ff7f0ade915e270bcef7d56b2 http://data.gdeltproject.org/gdeltv2/20261020100000.export.CSV.zip
+126931 2496b514ca9240d47f82d3938f220855 http://data.gdeltproject.org/gdeltv2/20261020100000.mentions.CSV.zip
+5081810 d85072ebc609074f77b412811d9a3296 http://data.gdeltproject.org/gdeltv2/20261020100000.gkg.csv.zip
+
+20261020100000.gkg.csv 1203 records
+27 20261020100000 postandcourier.com https://www.postandcourier.com/food/carolina-bananas-johns-island-farming/articl
+  LOC: 1#Philippines#RP#RP##13#122#RP#2343;1#Thai#TH#TH##15#100#TH#2464;3#Johns Island, South Carolina, United States#US#USSC#SC019#32.7924#-80.1081#1223593#12;3#Johns Island, South Carolina, United States#U
+  TONE: 0.748502994011976,2.54491017964072,1.79640718562874,4.341317
+  TR: 
+  EX: <PAGE_LINKS>https://agriculture.sc.gov/13-sc-entrepreneurs-awarded-funding-for-agribusinesses/;https://www.facebook.com/p/Carolina-Bananas-61553760937000/;https://www.foodandwine.com/tropic-bioscience
+27 20261020100000 iheart.com https://800wvhu.iheart.com/content/2026-10-20-hegseth-meets-netanyahu-in-unannou
+  LOC: 1#Israel#IS#IS##31.5#34.75#IS#63;1#Israel#IS#IS##31.5#34.75#IS#167;1#Israel#IS#IS##31.5#34.75#IS#210;1#Israel#IS#IS##31.5#34.75#IS#267;1#Israel#IS#IS##31.5#34.75#IS#338;1#Israel#IS#IS##31.5#34.75#IS#1
+  TONE: -0.492610837438424,1.97044334975369,2.46305418719212,4.43349
+  TR: 
+  EX: <PAGE_LINKS>https://www.anews.com.tr/americas/2026/10/20/us-defense-secretary-meets-with-netanyahu-during-unannounced-visit-to-israel-report;https://www.axios.com/2026/10/19/pete-hegseth-israel-visit-
+27 20261020100000 messengernewspapers.co.uk https://www.messengernewspapers.co.uk/news/national/26651985.diageo-sincerely-so
+  LOC: 4#River Spey, Moray, United Kingdom#UK#UKV6#40172#57.6667#-3.1#-2608423#132;4#River Spey, Moray, United Kingdom#UK#UKV6#40172#57.6667#-3.1#-2608423#856;4#Knockando, Moray, United Kingdom#UK#UKV6#40172
+  TONE: -2.80898876404494,1.96629213483146,4.7752808988764,6.7415730
+  TR: 
+  EX: <PAGE_PRECISEPUBTIMESTAMP>20261020095200</PAGE_PRECISEPUBTIMESTAMP><PAGE_TITLE>Diageo 'sincerely sorry' following pollution incident on River Spey tributary</PAGE_TITLE>
+http://data.gdeltproject.org/gdeltv2/lastupdate-translation.txt
+72693 e25076c40f699c195c24a57d90df7f45 http://data.gdeltproject.org/gdeltv2/20261020094500.translation.export.CSV.zip
+101138 076cb169953638a1133ba336ce0923a0 http://data.gdeltproject.org/gdeltv2/20261020094500.translation.mentions.CSV.zip
+13131815 cd001e49bee92f3eec88e58364962443 http://data.gdeltproject.org/gdeltv2/20261020094500.translation.gkg.csv.zip
+
+20261020094500.translation.gkg.csv 3338 records
+27 20261020094500 novinky.cz https://www.novinky.cz/clanek/zahranicni-v-pristavu-na-sicilii-vylovili-telo-ces
+  LOC: 1#Czech#EZ#EZ##49.75#15#EZ#51;1#Czech#EZ#EZ##49.75#15#EZ#477;1#Czech#EZ#EZ##49.75#15#EZ#599;4#Rome, Lazio, Italy#IT#IT07#18350#41.9#12.4833#-126693#650;5#Sicily, Sicilia, Italy#IT#IT15#18395#37.75#14.
+  TONE: -4.65116279069767,1.55038759689922,6.2015503875969,7.7519379
+  TR: srclc:ces;eng:GT-CES 1.0
+  EX: <PAGE_LINKS>https://trapani.gds.it/articoli/cronaca/2026/10/18/tragedia-nel-porto-di-marsala-turista-trovata-morta-in-acqua-e-giallo-ccb6ba1d-501d-4c43-8bde-f1b7d51fc92b/</PAGE_LINKS><PAGE_PRECISEPUBT
+27 20261020094500 novinky.cz https://www.novinky.cz/clanek/cestovani-v-anglii-zavedou-pokuty-za-vyhravani-hla
+  LOC: 1#United Kingdom#UK#UK##54#-4#UK#322;1#United Kingdom#UK#UK##54#-4#UK#1041
+  TONE: -1.79856115107914,3.59712230215827,5.39568345323741,8.992805
+  TR: srclc:ces;eng:GT-CES 1.0
+  EX: <PAGE_LINKS>https://www.bbc.com/news/articles/cm89z008x7xdo</PAGE_LINKS><PAGE_PRECISEPUBTIMESTAMP>20261020083600</PAGE_PRECISEPUBTIMESTAMP><PAGE_TITLE>V Anglii zavedou pokuty za vyhr&#xE1;v&#xE1;n&#xE
+27 20261020094500 novinky.cz https://www.novinky.cz/clanek/krimi-chtel-zapalit-synagogu-zabit-bezdomovce-a-si
+  LOC: 1#China#CH#CH##35#105#CH#1151;1#China#CH#CH##35#105#CH#1257
+  TONE: -10.1492537313433,1.49253731343284,11.6417910447761,13.13432
+  TR: srclc:ces;eng:GT-CES 1.0
+  EX: <PAGE_PRECISEPUBTIMESTAMP>20261020083600</PAGE_PRECISEPUBTIMESTAMP><PAGE_TITLE>Cht&#x11B;l zap&#xE1;lit synagogu, zab&#xED;t bezdomovce a&#xA0;&#x161;&#xED;&#x159;il terorismus. Dostal dev&#x11B;t let
+DOMAINS 189545 ['0-100.it\tIT\tItaly', '0-50.ru\tRS\tRussia', '0-60mag.com\tUS\tUnited States', '0-debt.com\tUS\tUnited States', '000fff.org\tUS\tUnited States']
