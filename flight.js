@@ -61,12 +61,70 @@
       '<span class="ft-tag' + (mil ? " mil" : "") + '">' + esc(mil ? t("tagMil") : t("tagCivil")) + "</span></div>";
     h += '<div class="ft-sub" dir="auto">' + esc(mil ? [a[6], a[9]].filter(Boolean).join(" · ") : a[6] || "") + "</div>";
     h += '<div class="ft-grid">' +
-      "<span>" + esc(t("altitude")) + '</span><b dir="ltr">' + nf(a[2]) + " m · FL" + nf(Math.round(a[2] / 30.48)) + "</b>" +
+      "<span>" + esc(t("altitude")) + "</span><b" + (a[2] < 300 ? ">" + esc(t("nearGround")) : ' dir="ltr">' + nf(a[2]) + " m" +
+        (a[2] >= 1000 ? " · FL" + String(Math.round(a[2] / 30.48)).padStart(3, "0") : "")) + "</b>" +
       "<span>" + esc(t("speed")) + '</span><b dir="ltr">' + nf(a[3] * 3.6) + " km/h</b>" +
       "<span>" + esc(t("heading")) + '</span><b dir="ltr">' + nf(a[4]) + "°</b>" +
       "<span>" + esc(t("vertical")) + "</span><b>" + esc(trend) + "</b></div>";
+    if (pinnedTip) h += routeHtml(a);
     h += '<div class="ft-foot">' + esc(t("dataAge", { n: age })) +
       (pinnedTip ? " · " + esc(t(f.hist && f.hist[sel.key] ? "routeNote" : "routeNoteNoHist")) : "") + "</div>";
+    return h;
+  }
+
+  // ------------------------------------------------------------ kalkış / varış (adsbdb, uçuş koduna kayıtlı rota)
+  var routeCache = {};
+  function lookupRoute(cs) {
+    cs = (cs || "").trim().toUpperCase();
+    if (!cs) return Promise.resolve(null);
+    if (!routeCache[cs]) {
+      routeCache[cs] = fetch("https://api.adsbdb.com/v0/callsign/" + encodeURIComponent(cs))
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          var fr = j && j.response && j.response.flightroute;
+          return fr && fr.origin && fr.destination ? fr : null;
+        })
+        .catch(function () { return null; });
+    }
+    return routeCache[cs];
+  }
+  function gcDist(lat1, lng1, lat2, lng2) {
+    var r = Math.PI / 180, dLat = (lat2 - lat1) * r, dLng = (lng2 - lng1) * r;
+    var x = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+  }
+  function bearing(lat1, lng1, lat2, lng2) {
+    var r = Math.PI / 180, y = Math.sin((lng2 - lng1) * r) * Math.cos(lat2 * r);
+    var x = Math.cos(lat1 * r) * Math.sin(lat2 * r) - Math.sin(lat1 * r) * Math.cos(lat2 * r) * Math.cos((lng2 - lng1) * r);
+    return (Math.atan2(y, x) / r + 360) % 360;
+  }
+  // Kayıtlı rota gerçekte uçulan rota olmayabilir: uçağın yönü varışa bakmıyorsa "doğrulanamadı" denir
+  function routeCheck(a, fr) {
+    var d = fr.destination, brg = bearing(a[1], a[0], d.latitude, d.longitude);
+    var diff = Math.abs(((brg - a[4]) + 540) % 360 - 180);
+    var remain = gcDist(a[1], a[0], d.latitude, d.longitude);
+    return { remain: remain, ok: diff < 75 || remain < 80 };
+  }
+  function routeHtml(a) {
+    if (!pinned) return "";
+    if (pinned.route === undefined) return '<div class="ft-route muted">' + esc(t("loading")) + "</div>";
+    var fr = pinned.route;
+    if (!fr) return '<div class="ft-route muted">' + esc(t("noRoute")) + "</div>";
+    var o = fr.origin, d = fr.destination, chk = routeCheck(a, fr);
+    var h = '<div class="ft-route">';
+    if (fr.airline && fr.airline.name) h += '<div class="ft-airline" dir="auto">' + esc(fr.airline.name) + "</div>";
+    h += '<div class="ft-od" dir="ltr"><b>' + esc(o.iata_code || o.icao_code) + '</b><span class="ft-arrow">· · · ➜</span><b>' +
+      esc(d.iata_code || d.icao_code) + "</b></div>";
+    h += '<div class="ft-cities" dir="auto">' + esc(o.municipality || o.name) + " → " + esc(d.municipality || d.name) + "</div>";
+    if (chk.ok) {
+      var mins = a[3] > 30 ? Math.round(chk.remain / (a[3] * 3.6) * 60) : null;
+      h += '<div class="ft-grid"><span>' + esc(t("remaining")) + '</span><b dir="ltr">' + nf(chk.remain) + " km</b>" +
+        (mins != null ? "<span>" + esc(t("eta")) + '</span><b dir="ltr">~' + (mins >= 60 ? Math.floor(mins / 60) + " sa " : "") + (mins % 60) + " dk</b>" : "") +
+        "</div>";
+    } else {
+      h += '<div class="ft-warn">' + esc(t("routeUnsure")) + "</div>";
+    }
+    h += "</div>";
     return h;
   }
 
@@ -108,7 +166,17 @@
     if (hit) {
       e.stopImmediatePropagation();
       e.preventDefault();
-      if (e.type === "click") { pinned = hit; buildRoute(); }
+      if (e.type === "click") {
+        pinned = hit;
+        pinned.route = undefined;
+        var f = fleet(hit.fleetId), i = indexOf(f, hit.key), sel = pinned;
+        lookupRoute(i >= 0 ? f.data[i][5] : "").then(function (fr) {
+          if (pinned !== sel) return;
+          sel.route = fr;
+          buildRoute();
+        });
+        buildRoute();
+      }
     } else if (pinned && e.type === "click") {
       pinned = null; tip.hidden = true; clearRoute();
     }
@@ -135,7 +203,24 @@
   }
   function clearRoute() {
     if (route) { globe.scene().remove(route); route.geometry.dispose(); route = null; }
+    globe.arcsData([]);
+    globe.labelsData([]);
   }
+  // Varışa giden noktalı, akan yay ve havalimanı etiketleri
+  globe
+    .arcStartLat("sLat").arcStartLng("sLng").arcEndLat("eLat").arcEndLng("eLng")
+    .arcColor(function (d) { return d.color; })
+    .arcAltitude(function (d) { return d.alt; })
+    .arcStroke(function (d) { return d.stroke; })
+    .arcDashLength(function (d) { return d.dash; })
+    .arcDashGap(function (d) { return d.gap; })
+    .arcDashAnimateTime(function (d) { return d.anim; })
+    .arcsTransitionDuration(0)
+    .labelLat("lat").labelLng("lng").labelText("text")
+    .labelSize(1.3).labelDotRadius(0.45).labelAltitude(0.018)
+    .labelColor(function (d) { return d.color; })
+    .labelResolution(2)
+    .labelsTransitionDuration(0);
   function buildRoute() {
     clearRoute();
     if (!pinned) return;
@@ -148,7 +233,9 @@
     for (var k = 0; k < chain.length - 1; k++) segDots(chain[k], chain[k + 1], 0.12, past);
     // önümüzdeki 20 dakika: mevcut hız ve yönle tahmin
     var now = Date.now();
-    for (var m = 1; m <= 40; m++) { var w = f.where(i, now + m * 30000); fut.push([w.lat, w.lng]); }
+    if (!pinned.route) {
+      for (var m = 1; m <= 40; m++) { var w = f.where(i, now + m * 30000); fut.push([w.lat, w.lng]); }
+    }
     var all = past.concat(fut), n = all.length;
     var pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
     var cPast = new THREE.Color(pinned.fleetId === "milair" ? 0xff7070 : 0xffe3a0), cFut = new THREE.Color(0x9fd8ff);
@@ -168,6 +255,29 @@
     route.raycast = function () {};
     route.renderOrder = 14;
     globe.scene().add(route);
+
+    var fr = pinned.route;
+    if (fr) {
+      var o = fr.origin, d = fr.destination, chk = routeCheck(f.data[i], fr);
+      var arcs = [{
+        sLat: cur.lat, sLng: cur.lng, eLat: d.latitude, eLng: d.longitude,
+        // varış: akan nokta nokta yay (yönü varışa doğru)
+        color: chk.ok ? ["rgba(126,220,255,0.95)", "rgba(126,220,255,0.95)"] : ["rgba(126,220,255,0.35)", "rgba(126,220,255,0.35)"],
+        alt: Math.min(0.25, 0.02 + chk.remain / 40000), stroke: 0.32, dash: 0.012, gap: 0.012, anim: 2600
+      }];
+      if (gcDist(cur.lat, cur.lng, o.latitude, o.longitude) > 30) {
+        arcs.push({
+          sLat: o.latitude, sLng: o.longitude, eLat: cur.lat, eLng: cur.lng,
+          color: ["rgba(255,227,160,0.15)", "rgba(255,227,160,0.5)"],
+          alt: Math.min(0.25, 0.02 + gcDist(o.latitude, o.longitude, cur.lat, cur.lng) / 40000), stroke: 0.18, dash: 0.006, gap: 0.014, anim: 0
+        });
+      }
+      globe.arcsData(arcs);
+      globe.labelsData([
+        { lat: o.latitude, lng: o.longitude, text: o.iata_code || o.icao_code, color: "rgba(255,227,160,0.85)" },
+        { lat: d.latitude, lng: d.longitude, text: (d.iata_code || d.icao_code), color: "rgba(126,220,255,1)" }
+      ]);
+    }
   }
 
   // ------------------------------------------------------------ tüm uçakların akan izleri

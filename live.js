@@ -334,12 +334,12 @@
     .pointAltitude(function (d) { return d.kind === "iss" ? 0.066 : d.kind === "event" ? 0.02 : 0.012; })
     .pointRadius(function (d) {
       if (d.kind === "iss") return 0.9;
-      if (d.kind === "event") return d.cat === "severeStorms" ? 0.75 : 0.32;
+      if (d.kind === "event") return d.cat === "severeStorms" ? 0.4 : 0.32;
       return 0.15 + Math.max(0, d.mag - 2.5) * 0.18;
     })
     .pointColor(function (d) {
       if (d.kind === "iss") return "#7ef9ff";
-      if (d.kind === "event") return EV_COLORS[d.cat];
+      if (d.kind === "event") return d.cat === "severeStorms" ? catColor(d.unit === "kts" ? d.mag : null, 0.9) : EV_COLORS[d.cat];
       // Depremler kırmızı tonlarda: büyüdükçe koyulaşır
       return d.mag >= 6 ? "#d90000" : d.mag >= 4.5 ? "#ff1f1f" : "#ff5a5a";
     })
@@ -350,7 +350,7 @@
       }
       if (d.kind === "event") {
         var m = "";
-        if (d.mag != null && d.unit === "kts") m = " · " + nfmt(d.mag * 1.852) + " km/h";
+        if (d.mag != null && d.unit === "kts") m = " · " + esc(catLabel(d.mag)) + " · " + nfmt(d.mag * 1.852) + " km/h";
         else if (d.mag != null) m = " · " + nfmt(d.mag, 1) + " " + esc(d.unit || "");
         return '<div class="tip" dir="auto"><b>' + esc(t("ev_" + d.cat)) + "</b> · " + esc(d.title) + m +
           " · " + esc(agoTxt(new Date(d.date).getTime())) + "</div>";
@@ -386,6 +386,108 @@
       }).catch(function (e) { console.warn("iss", e); });
   }
 
+  // ------------------------------------------------------------ tropik fırtınalar: Saffir-Simpson kategorisi
+  function stormCat(kts) {
+    if (kts == null) return null;
+    if (kts < 34) return 0;   // tropik çöküntü
+    if (kts < 64) return 0.5; // tropik fırtına
+    if (kts < 83) return 1;
+    if (kts < 96) return 2;
+    if (kts < 113) return 3;
+    if (kts < 137) return 4;
+    return 5;
+  }
+  var CAT_RGB = { 0: [120, 200, 255], 0.5: [90, 230, 200], 1: [255, 235, 120], 2: [255, 190, 80], 3: [255, 130, 60], 4: [255, 60, 80], 5: [230, 70, 255] };
+  function catColor(kts, a) {
+    var c = CAT_RGB[stormCat(kts)] || [255, 92, 240];
+    return "rgba(" + c.join(",") + "," + (a == null ? 1 : a) + ")";
+  }
+  function catLabel(kts) {
+    var c = stormCat(kts);
+    if (c == null) return "";
+    if (c === 0) return t("stormTD");
+    if (c === 0.5) return t("stormTS");
+    return t("stormCat", { n: c });
+  }
+
+  // Dönen sarmal bulut dokusu: 3 kollu logaritmik sarmal + duvar bulutu + göz
+  var spiralTex = (function () {
+    var S = 512, raw = document.createElement("canvas");
+    raw.width = raw.height = S;
+    var x = raw.getContext("2d");
+    x.translate(S / 2, S / 2);
+    x.lineCap = "round";
+    for (var arm = 0; arm < 3; arm++) {
+      var prev = null;
+      for (var k = 0; k <= 220; k++) {
+        var tt = k / 220, ang = arm * Math.PI * 2 / 3 + tt * Math.PI * 3.1, r = 26 + Math.pow(tt, 1.15) * (S / 2 - 40);
+        var p = [Math.cos(ang) * r, Math.sin(ang) * r];
+        if (prev) {
+          x.strokeStyle = "rgba(255,255,255," + (0.85 * Math.pow(1 - tt, 0.7) + 0.05) + ")";
+          x.lineWidth = 34 * (1 - tt) + 6;
+          x.beginPath(); x.moveTo(prev[0], prev[1]); x.lineTo(p[0], p[1]); x.stroke();
+        }
+        prev = p;
+      }
+    }
+    // dış hale
+    var g = x.createRadialGradient(0, 0, 40, 0, 0, S / 2 - 10);
+    g.addColorStop(0, "rgba(255,255,255,0.35)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = g; x.beginPath(); x.arc(0, 0, S / 2 - 10, 0, Math.PI * 2); x.fill();
+    // duvar bulutu
+    x.strokeStyle = "rgba(255,255,255,1)"; x.lineWidth = 22;
+    x.beginPath(); x.arc(0, 0, 30, 0, Math.PI * 2); x.stroke();
+    // yumuşatma
+    var c = document.createElement("canvas");
+    c.width = c.height = S;
+    var y = c.getContext("2d");
+    y.filter = "blur(6px)";
+    y.drawImage(raw, 0, 0);
+    y.filter = "none";
+    // göz: ortayı boşalt
+    y.globalCompositeOperation = "destination-out";
+    var e = y.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, 18);
+    e.addColorStop(0, "rgba(0,0,0,1)");
+    e.addColorStop(1, "rgba(0,0,0,0)");
+    y.fillStyle = e; y.beginPath(); y.arc(S / 2, S / 2, 18, 0, Math.PI * 2); y.fill();
+    return new THREE.CanvasTexture(c);
+  })();
+  var cyclones = [];
+  function buildCyclones() {
+    cyclones.forEach(function (cy) { globe.scene().remove(cy.mesh); cy.mesh.geometry.dispose(); cy.mesh.material.dispose(); });
+    cyclones = [];
+    if (!on.events) return;
+    events.filter(function (e) { return e.cat === "severeStorms"; }).forEach(function (e) {
+      var kts = e.unit === "kts" ? e.mag : null, cat = stormCat(kts);
+      // çap: rüzgâr hızıyla büyür (yaklaşık 3-9 derece)
+      var deg = 4 + Math.min(7, Math.max(0, ((kts || 40) - 34) / 15));
+      var size = deg * Math.PI / 180 * globe.getGlobeRadius() * 2;
+      var col = CAT_RGB[cat] || [255, 255, 255];
+      var mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({
+        map: spiralTex, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+        color: new THREE.Color("rgb(" + col.map(function (v) { return Math.round(255 - (255 - v) * 0.25); }).join(",") + ")")
+      }));
+      var p = globe.getCoords(e.lat, e.lng, 0.03);
+      mesh.position.set(p.x, p.y, p.z);
+      mesh.lookAt(p.x * 2, p.y * 2, p.z * 2);
+      mesh.raycast = function () {};
+      mesh.renderOrder = 15;
+      globe.scene().add(mesh);
+      // Kuzey Yarımküre saat yönünün tersine, güney saat yönünde döner; güçlü fırtına daha hızlı
+      cyclones.push({ mesh: mesh, base: mesh.quaternion.clone(), dir: e.lat >= 0 ? 1 : -1, speed: 0.4 + (cat || 0) * 0.25, ang: 0 });
+    });
+  }
+  (function spin(ts) {
+    requestAnimationFrame(spin);
+    if (!cyclones.length) return;
+    var q = new THREE.Quaternion(), z = new THREE.Vector3(0, 0, 1);
+    cyclones.forEach(function (cy) {
+      cy.ang = (ts / 1000) * cy.speed * cy.dir;
+      cy.mesh.quaternion.copy(cy.base).multiply(q.setFromAxisAngle(z, cy.ang));
+    });
+  })(0);
+
   // ------------------------------------------------------------ doğal olaylar (NASA EONET)
   var events = [], stormPaths = [], eventTimer = null;
   var EV_COLORS = { wildfires: "#ff7a2f", severeStorms: "#ff5cf0", volcanoes: "#ff3838", seaLakeIce: "#d8f3ff", other: "#ffe066" };
@@ -405,17 +507,25 @@
             mag: last.magnitudeValue, unit: last.magnitudeUnit, link: e.sources && e.sources[0] && e.sources[0].url
           });
           if (cat === "severeStorms" && pts.length > 1) {
-            stormPaths.push({ title: e.title, coords: pts.map(function (g) { return [g.coordinates[1], g.coordinates[0]]; }) });
+            stormPaths.push({
+              title: e.title,
+              coords: pts.map(function (g) { return [g.coordinates[1], g.coordinates[0]]; }),
+              kts: pts.map(function (g) { return g.magnitudeUnit === "kts" ? g.magnitudeValue : null; })
+            });
           }
         });
         counts.events = events.length;
-        pointData(); notify();
+        pointData(); buildCyclones(); notify();
       }).catch(function (e) { counts.events = null; console.warn("eonet", e); notify(); });
   }
   globe
     .pathPoints("coords").pathPointLat(function (p) { return p[0]; }).pathPointLng(function (p) { return p[1]; })
     .pathPointAlt(0.014)
-    .pathColor(function () { return ["rgba(255,92,240,0.15)", "rgba(255,92,240,0.95)"]; })
+    // Rota, her noktadaki fırtına kategorisinin rengiyle boyanır
+    .pathColor(function (p) {
+      var n = p.kts.length;
+      return p.kts.map(function (k, i) { return catColor(k, 0.25 + 0.75 * (i + 1) / n); });
+    })
     .pathStroke(1.6)
     .pathDashLength(0.06).pathDashGap(0.03).pathDashAnimateTime(6000)
     .pathLabel(function (p) { return '<div class="tip" dir="auto">' + esc(p.title) + "</div>"; });
@@ -437,6 +547,7 @@
         clearInterval(eventTimer);
         if (v) { loadEvents(); eventTimer = setInterval(loadEvents, 30 * 60000); }
         pointData();
+        buildCyclones();
       }
       if (id === "quakes") {
         clearInterval(quakeTimer);
