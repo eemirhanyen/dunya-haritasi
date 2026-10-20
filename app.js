@@ -318,7 +318,7 @@
       h += '<div class="src">' + esc(fmtDate(m.as_of)) + " kapanışı · Yahoo Finance</div>";
     }
     if (n && (n.local.length || n.intl.length)) {
-      h += "<h3>Son 72 saatin haberleri</h3>";
+      h += "<h3>Son " + ((news && news.hours) || 24) + " saatin haberleri</h3>";
       h += '<div class="tabs" role="tablist"><button class="on" data-k="intl">Uluslararası</button><button data-k="local">Yerel medya</button></div>';
       h += '<ul class="news" data-k="intl">' + newsList(n.intl) + "</ul>";
       h += '<ul class="news" data-k="local" hidden>' + newsList(n.local) + "</ul>";

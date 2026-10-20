@@ -37,7 +37,7 @@ MIN_HEADLINES = 5           # bundan azsa ülke o gün puanlanmaz
 POLL_EVERY = 30             # saniye
 POLL_LIMIT = 4 * 3600       # en fazla 4 saat bekle
 
-SYSTEM = """Sen bir ülke durum değerlendiricisisin. Görevin, bir ülkenin SON 72 SAATTEKİ genel gidişatını, dünyadaki tipik bir ülkenin tipik bir 72 saatiyle karşılaştırarak 0-100 arası puanlamak.
+SYSTEM = """Sen bir ülke durum değerlendiricisisin. Görevin, bir ülkenin SON 24 SAATTEKİ genel gidişatını, dünyadaki tipik bir ülkenin tipik bir günüyle karşılaştırarak 0-100 arası puanlamak.
 
 Ölçek:
 - 50: Olağan bir dönem. Sıradan siyaset, ekonomi, toplum haberleri; belirgin kriz yok. Haberlerin olumsuz ağırlıklı olması tek başına puan düşürme nedeni değildir; haber akışı her ülkede olumsuzluğa eğilimlidir.
@@ -93,9 +93,9 @@ def fmt_market(m):
             f"({m['as_of'][:10]}). Değişim: 1 gün {p(m['chg_1d'])}, 1 hafta {p(m['chg_1w'])}, 1 ay {p(m['chg_1m'])}.")
 
 
-def build_prompt(name, news):
+def build_prompt(name, news, world_tone=None):
     lines, n = [], 0
-    for label, key in (("ÜLKENİN KENDİ MEDYASI", "local"), ("ULUSLARARASI MEDYA (İngilizce)", "intl")):
+    for label, key in (("ÜLKENİN KENDİ MEDYASI", "local"), ("DİĞER ÜLKELERİN MEDYASI", "intl")):
         items = news.get(key, [])[:MAX_HEADLINES]
         lines.append(f"\n## {label}")
         if not items:
@@ -104,7 +104,13 @@ def build_prompt(name, news):
             n += 1
             when = (a.get("time") or "")[:16].replace("T", " ")
             lines.append(f"[{n}] {when} | {a.get('domain')} | {a['title']}")
+    tone = news.get("tone")
+    tone_txt = "veri yok" if tone is None else (
+        f"{tone:+.2f} ({news.get('articles', 0)} haber; dünya ülke ortalaması "
+        f"{'bilinmiyor' if world_tone is None else f'{world_tone:+.2f}'}). Negatif değer olumsuz dil demektir; "
+        "yalnızca yardımcı sinyaldir.")
     return n, (f"Ülke: {name}\nTarih: {dt.date.today().isoformat()}\n\n## BORSA\n{fmt_market(news.get('market'))}\n"
+               f"\n## GDELT HABER TONU (son 24 saat)\n{tone_txt}\n"
                + "\n".join(lines))
 
 
@@ -130,7 +136,8 @@ def main():
         log("ANTHROPIC_API_KEY yok; AI değerlendirmesi atlandı.")
         return
     idx = json.load(open(INDEX_PATH, encoding="utf-8"))["countries"]
-    news = json.load(open(NEWS_PATH, encoding="utf-8"))["countries"]
+    news_all = json.load(open(NEWS_PATH, encoding="utf-8"))
+    news, world_tone = news_all["countries"], news_all.get("world_tone")
     hist = {}
     if os.path.exists(HIST_PATH):
         hist = json.load(open(HIST_PATH, encoding="utf-8")).get("countries", {})
@@ -146,7 +153,7 @@ def main():
         if n.get("stale"):
             skipped.append(iso)
             continue
-        count, prompt = build_prompt(idx[iso]["name"], n)
+        count, prompt = build_prompt(idx[iso]["name"], n, world_tone)
         if count < MIN_HEADLINES:
             skipped.append(iso)
             continue
