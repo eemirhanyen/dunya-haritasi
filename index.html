@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dünya Haritası</title>
+  <meta name="description" content="Ülkelerin yönetişim, ekonomi, insani gelişme, yargı ve medya bağımsızlığı göstergelerinin dünya ortalamasına göre konumu.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="globe" aria-label="Dünya küresi"></div>
+
+  <header class="brand">
+    <h1>Dünya Haritası</h1>
+    <p>Ülkeler, dünya ortalamasına göre</p>
+  </header>
+
+  <div class="legend" aria-label="Renk açıklaması">
+    <div class="legend-row"><span class="dot good"></span>Dünya ortalamasının üstünde <small>67–100</small></div>
+    <div class="legend-row"><span class="dot mid"></span>Ortalama civarı <small>33–67</small></div>
+    <div class="legend-row"><span class="dot bad"></span>Dünya ortalamasının altında <small>0–33</small></div>
+    <div class="legend-row muted"><span class="dot none"></span>Henüz değerlendirilmedi</div>
+    <div class="legend-meta" id="updated"></div>
+  </div>
+
+  <div class="hint" id="hint">Renkli bir ülkeye tıkla</div>
+
+  <aside class="panel" id="panel" aria-hidden="true">
+    <button class="close" id="close" aria-label="Paneli kapat">×</button>
+    <div id="panel-body"></div>
+  </aside>
+
+  <div class="error" id="error" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -63,6 +63,10 @@ DEMO = {
     "SP.POP.65UP.TO.ZS": "65 yaş ve üstü (%)",
 }
 
+CURRENT_YEAR = dt.date.today().year
+# Bundan eski veriler kullanılmaz; eski veri ülkeyi haksız yere öne/arkaya atar.
+MAX_AGE_YEARS = 6
+
 # Enflasyonda hedef: yüzde 2 civarı en iyi kabul edilir; hem yüksek
 # enflasyon hem deflasyon kötü puan alır.
 INFLATION_TARGET = 2.0
@@ -121,18 +125,31 @@ def wb_countries():
 
 
 def wb_indicator(code, source=None):
-    """Her ülke için en son boş olmayan değer: {iso: (değer, yıl)}."""
-    url = f"{WB}/country/all/indicator/{code}?format=json&per_page=20000&mrnev=1"
-    if source:
-        url += f"&source={source}"
-    data = json.loads(get(url))
-    if not isinstance(data, list) or len(data) < 2 or data[1] is None:
-        raise RuntimeError(f"Dünya Bankası göstergesi boş döndü: {code} -> {str(data)[:200]}")
+    """Her ülke için son MAX_AGE_YEARS içindeki en güncel değer: {iso: (değer, yıl)}.
+
+    mrnev parametresi bazı WGI serilerinde çok eski yıl döndürdüğü için
+    kullanılmıyor; yıl aralığı açıkça isteniyor ve en güncel yıl seçiliyor.
+    """
+    y1 = CURRENT_YEAR - MAX_AGE_YEARS
     out = {}
-    for row in data[1]:
-        iso = row.get("countryiso3code")
-        if iso and row.get("value") is not None:
-            out[iso] = (float(row["value"]), int(row["date"]))
+    page, pages = 1, 1
+    while page <= pages:
+        url = (f"{WB}/country/all/indicator/{code}?format=json&per_page=20000"
+               f"&date={y1}:{CURRENT_YEAR}&page={page}")
+        if source:
+            url += f"&source={source}"
+        data = json.loads(get(url))
+        if not isinstance(data, list) or len(data) < 2 or data[1] is None:
+            raise RuntimeError(f"Dünya Bankası göstergesi boş döndü: {code} -> {str(data)[:200]}")
+        pages = int(data[0].get("pages", 1))
+        for row in data[1]:
+            iso = row.get("countryiso3code")
+            if not iso or row.get("value") is None:
+                continue
+            y = int(row["date"])
+            if iso not in out or y > out[iso][1]:
+                out[iso] = (float(row["value"]), y)
+        page += 1
     return out
 
 
@@ -150,6 +167,8 @@ def owid_latest(slug):
         if len(code) != 3 or not val:
             continue
         y = int(year)
+        if y < CURRENT_YEAR - MAX_AGE_YEARS:
+            continue
         if code not in out or y > out[code][1]:
             out[code] = (float(val), y)
     return out, col
@@ -245,9 +264,12 @@ def main():
     labels["RSF"] = "Basın özgürlüğü skoru (RSF)"
 
     # Evreni ülke listesiyle sınırla
+    coverage = {}
     for k in raw:
         raw[k] = {iso: v for iso, v in raw[k].items() if iso in universe}
-        log(f"  {k}: {len(raw[k])} ülke")
+        years = sorted({y for _, y in raw[k].values()})
+        log(f"  {k}: {len(raw[k])} ülke, yıllar {years[0] if years else '-'}-{years[-1] if years else '-'}")
+        coverage[k] = {"countries": len(raw[k]), "years": [years[0], years[-1]] if years else []}
 
     # Yüzdelik dilimler
     def vals(k, f=lambda x: x):
@@ -336,6 +358,8 @@ def main():
             "thresholds": {"red_below": 33.3, "green_from": 66.7},
             "inflation_target": INFLATION_TARGET,
             "universe_size": len(universe),
+            "max_age_years": MAX_AGE_YEARS,
+            "coverage": coverage,
         },
         "countries": result,
     }
