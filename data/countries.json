@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T00:06:22+00:00",
+  "generated_at": "2026-10-20T00:13:51+00:00",
   "method": {
     "description": "Her gösterge dünya genelinde yüzdelik dilime çevrilir (50 = dünya ortası). Beş boyut eşit ağırlıklıdır. Şu an skor yalnızca endeks yarısıdır; AI değerlendirmesi ikinci aşamada eklenecek.",
     "weights": {
@@ -15,7 +15,80 @@
       "green_from": 66.7
     },
     "inflation_target": 2.0,
-    "universe_size": 217
+    "universe_size": 217,
+    "max_age_years": 6,
+    "coverage": {
+      "GOV_WGI_GE.EST": {
+        "countries": 205,
+        "years": [
+          2025,
+          2025
+        ]
+      },
+      "GOV_WGI_RQ.EST": {
+        "countries": 205,
+        "years": [
+          2025,
+          2025
+        ]
+      },
+      "GOV_WGI_PV.EST": {
+        "countries": 207,
+        "years": [
+          2025,
+          2025
+        ]
+      },
+      "GOV_WGI_CC.EST": {
+        "countries": 207,
+        "years": [
+          2025,
+          2025
+        ]
+      },
+      "NY.GDP.PCAP.PP.KD": {
+        "countries": 199,
+        "years": [
+          2022,
+          2025
+        ]
+      },
+      "FP.CPI.TOTL.ZG": {
+        "countries": 180,
+        "years": [
+          2022,
+          2025
+        ]
+      },
+      "SL.UEM.TOTL.ZS": {
+        "countries": 187,
+        "years": [
+          2021,
+          2025
+        ]
+      },
+      "HDI": {
+        "countries": 193,
+        "years": [
+          2023,
+          2023
+        ]
+      },
+      "VDEM_JUCON": {
+        "countries": 173,
+        "years": [
+          2025,
+          2025
+        ]
+      },
+      "RSF": {
+        "countries": 177,
+        "years": [
+          2026,
+          2026
+        ]
+      }
+    }
   },
   "countries": {
     "TUR": {
@@ -24,35 +97,35 @@
       "dimensions": {
         "governance": {
           "label": "Yönetişim",
-          "score": 41.8,
+          "score": 36.5,
           "parts": [
             {
               "code": "GOV_WGI_GE.EST",
               "label": "Hükümet etkinliği",
               "value": 0.0289,
               "year": 2025,
-              "percentile": 48.0
+              "percentile": 48.5
             },
             {
               "code": "GOV_WGI_RQ.EST",
               "label": "Düzenleyici kalite",
               "value": -0.1719,
               "year": 2025,
-              "percentile": 46.1
+              "percentile": 46.6
             },
             {
               "code": "GOV_WGI_PV.EST",
               "label": "Siyasi istikrar",
               "value": -0.8812,
               "year": 2025,
-              "percentile": 15.2
+              "percentile": 15.7
             },
             {
               "code": "GOV_WGI_CC.EST",
               "label": "Yolsuzluk kontrolü",
-              "value": 0.0564,
-              "year": 2006,
-              "percentile": 57.7
+              "value": -0.5281,
+              "year": 2025,
+              "percentile": 35.0
             }
           ],
           "source": {
@@ -62,7 +135,7 @@
         },
         "economy": {
           "label": "Ekonomi",
-          "score": 33.2,
+          "score": 33.1,
           "parts": [
             {
               "code": "NY.GDP.PCAP.PP.KD",
@@ -76,7 +149,7 @@
               "label": "Enflasyon (TÜFE, %)",
               "value": 34.8812,
               "year": 2025,
-              "percentile": 3.4
+              "percentile": 3.1
             },
             {
               "code": "SL.UEM.TOTL.ZS",
@@ -110,14 +183,14 @@
         },
         "judiciary": {
           "label": "Yargı bağımsızlığı",
-          "score": 22.1,
+          "score": 22.3,
           "parts": [
             {
               "code": "VDEM_JUCON",
               "label": "Yargısal denetim endeksi (V-Dem)",
               "value": 0.202,
               "year": 2025,
-              "percentile": 22.1
+              "percentile": 22.3
             }
           ],
           "source": {
@@ -170,9 +243,9 @@
           "year": 2025
         }
       },
-      "index_score": 36.1,
+      "index_score": 35.1,
       "ai_score": null,
-      "final_score": 36.1
+      "final_score": 35.1
     },
     "GRC": {
       "iso3": "GRC",
@@ -180,35 +253,35 @@
       "dimensions": {
         "governance": {
           "label": "Yönetişim",
-          "score": 64.5,
+          "score": 62.5,
           "parts": [
             {
               "code": "GOV_WGI_GE.EST",
               "label": "Hükümet etkinliği",
               "value": 0.3218,
               "year": 2025,
-              "percentile": 62.2
+              "percentile": 62.7
             },
             {
               "code": "GOV_WGI_RQ.EST",
               "label": "Düzenleyici kalite",
               "value": 0.416,
               "year": 2025,
-              "percentile": 70.0
+              "percentile": 70.5
             },
             {
               "code": "GOV_WGI_PV.EST",
               "label": "Siyasi istikrar",
               "value": 0.2767,
               "year": 2025,
-              "percentile": 54.8
+              "percentile": 55.3
             },
             {
               "code": "GOV_WGI_CC.EST",
               "label": "Yolsuzluk kontrolü",
-              "value": 0.4727,
-              "year": 2006,
-              "percentile": 70.8
+              "value": 0.2505,
+              "year": 2025,
+              "percentile": 61.6
             }
           ],
           "source": {
@@ -218,7 +291,7 @@
         },
         "economy": {
           "label": "Ekonomi",
-          "score": 60.2,
+          "score": 60.0,
           "parts": [
             {
               "code": "NY.GDP.PCAP.PP.KD",
@@ -232,7 +305,7 @@
               "label": "Enflasyon (TÜFE, %)",
               "value": 2.4816,
               "year": 2025,
-              "percentile": 83.7
+              "percentile": 83.1
             },
             {
               "code": "SL.UEM.TOTL.ZS",
@@ -266,14 +339,14 @@
         },
         "judiciary": {
           "label": "Yargı bağımsızlığı",
-          "score": 60.1,
+          "score": 59.8,
           "parts": [
             {
               "code": "VDEM_JUCON",
               "label": "Yargısal denetim endeksi (V-Dem)",
               "value": 0.746,
               "year": 2025,
-              "percentile": 60.1
+              "percentile": 59.8
             }
           ],
           "source": {
@@ -326,9 +399,9 @@
           "year": 2025
         }
       },
-      "index_score": 64.2,
+      "index_score": 63.7,
       "ai_score": null,
-      "final_score": 64.2
+      "final_score": 63.7
     },
     "ISR": {
       "iso3": "ISR",
@@ -336,7 +409,7 @@
       "dimensions": {
         "governance": {
           "label": "Yönetişim",
-          "score": 66.3,
+          "score": 67.4,
           "parts": [
             {
               "code": "GOV_WGI_GE.EST",
@@ -357,14 +430,14 @@
               "label": "Siyasi istikrar",
               "value": -0.9136,
               "year": 2025,
-              "percentile": 14.3
+              "percentile": 14.7
             },
             {
               "code": "GOV_WGI_CC.EST",
               "label": "Yolsuzluk kontrolü",
-              "value": 0.8388,
-              "year": 2006,
-              "percentile": 77.5
+              "value": 0.9572,
+              "year": 2025,
+              "percentile": 81.4
             }
           ],
           "source": {
@@ -422,14 +495,14 @@
         },
         "judiciary": {
           "label": "Yargı bağımsızlığı",
-          "score": 76.7,
+          "score": 76.6,
           "parts": [
             {
               "code": "VDEM_JUCON",
               "label": "Yargısal denetim endeksi (V-Dem)",
               "value": 0.857,
               "year": 2025,
-              "percentile": 76.7
+              "percentile": 76.6
             }
           ],
           "source": {
@@ -482,9 +555,9 @@
           "year": 2025
         }
       },
-      "index_score": 67.6,
+      "index_score": 67.8,
       "ai_score": null,
-      "final_score": 67.6
+      "final_score": 67.8
     }
   }
 }
