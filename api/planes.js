@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     }
     const j = await r.json();
     res.setHeader("Cache-Control", "s-maxage=120, stale-while-revalidate=300");
-    res.status(200).json({ time: j.time, n: j.n, ttl: 180, s: j.s });
+    res.status(200).json({ time: j.time, n: j.n, ttl: 180, s: j.s, h: j.h || {} });
   } catch (e) {
     res.setHeader("Cache-Control", "s-maxage=30");
     res.status(502).json({ error: String(e && e.message || e) });

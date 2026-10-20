@@ -164,6 +164,13 @@
       f.points.visible = on[id];
       f.place();
     };
+    f.where = function (i, atMs) {
+      var a = f.data[i], rad = Math.PI / 180;
+      var dt = Math.min(1500, ((atMs || Date.now()) - f.fetched) / 1000), d = a[3] * dt, h = a[4] * rad;
+      var cosl = Math.max(0.15, Math.cos(a[1] * rad));
+      return { lat: a[1] + d * Math.cos(h) / 111320, lng: a[0] + d * Math.sin(h) / (111320 * cosl),
+               alt: 0.016 + Math.min(14000, a[2]) / 14000 * 0.012 };
+    };
     f.place = function () {
       if (!f.points || !on[id]) return;
       // Son veriden bu yana geçen süre kadar ileri taşı (hız ve yöne göre)
@@ -193,6 +200,7 @@
         return r.json();
       }).then(function (j) {
         f.data = j.s || [];
+        f.hist = j.h || {};
         f.fetched = (j.time ? j.time * 1000 : Date.now());
         if (Date.now() - f.fetched > 3600e3) f.fetched = Date.now();
         f.ttl = Math.max(60, j.ttl || 120);
@@ -200,6 +208,7 @@
         counts[id] = f.data.length;
         f.build();
         notify();
+        document.dispatchEvent(new CustomEvent("fleetupdate", { detail: id }));
       }).catch(function (e) {
         f.error = true;
         counts[id] = null;
@@ -315,21 +324,35 @@
     var arr = [];
     if (on.quakes) arr = arr.concat(quakes);
     if (on.iss && iss) arr.push(iss);
+    if (on.events) arr = arr.concat(events);
     globe.pointsData(arr);
+    globe.pathsData(on.events ? stormPaths : []);
     globe.ringsData(on.quakes ? quakes.filter(function (q) { return q.mag >= 4.5; }) : []);
   }
   globe
     .pointLat("lat").pointLng("lng")
-    .pointAltitude(function (d) { return d.kind === "iss" ? 0.066 : 0.012; })
-    .pointRadius(function (d) { return d.kind === "iss" ? 0.9 : 0.15 + Math.max(0, d.mag - 2.5) * 0.18; })
+    .pointAltitude(function (d) { return d.kind === "iss" ? 0.066 : d.kind === "event" ? 0.02 : 0.012; })
+    .pointRadius(function (d) {
+      if (d.kind === "iss") return 0.9;
+      if (d.kind === "event") return d.cat === "severeStorms" ? 0.75 : 0.32;
+      return 0.15 + Math.max(0, d.mag - 2.5) * 0.18;
+    })
     .pointColor(function (d) {
       if (d.kind === "iss") return "#7ef9ff";
+      if (d.kind === "event") return EV_COLORS[d.cat];
       return d.mag >= 6 ? "#ff3b3b" : d.mag >= 4.5 ? "#ff8a3d" : "#ffd166";
     })
     .pointsMerge(false)
     .pointLabel(function (d) {
       if (d.kind === "iss") {
         return '<div class="tip">' + esc(t("issTip", { a: nfmt(d.alt), v: nfmt(d.vel) })) + "</div>";
+      }
+      if (d.kind === "event") {
+        var m = "";
+        if (d.mag != null && d.unit === "kts") m = " · " + nfmt(d.mag * 1.852) + " km/h";
+        else if (d.mag != null) m = " · " + nfmt(d.mag, 1) + " " + esc(d.unit || "");
+        return '<div class="tip" dir="auto"><b>' + esc(t("ev_" + d.cat)) + "</b> · " + esc(d.title) + m +
+          " · " + esc(agoTxt(new Date(d.date).getTime())) + "</div>";
       }
       return '<div class="tip" dir="auto"><b>M' + nfmt(d.mag, 1) + "</b> · " + esc(d.place || "") + " · " + esc(agoTxt(d.time)) +
         (d.depth != null ? " · " + esc(t("depth")) + " " + nfmt(d.depth) + " km" : "") + "</div>";
@@ -362,9 +385,45 @@
       }).catch(function (e) { console.warn("iss", e); });
   }
 
+  // ------------------------------------------------------------ doğal olaylar (NASA EONET)
+  var events = [], stormPaths = [], eventTimer = null;
+  var EV_COLORS = { wildfires: "#ff7a2f", severeStorms: "#ff5cf0", volcanoes: "#ff3838", seaLakeIce: "#d8f3ff", other: "#ffe066" };
+  function loadEvents() {
+    return fetch("https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=30")
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) {
+        events = []; stormPaths = [];
+        (j.events || []).forEach(function (e) {
+          var cat = (e.categories && e.categories[0] && e.categories[0].id) || "other";
+          var pts = (e.geometry || []).filter(function (g) { return g.type === "Point"; });
+          if (!pts.length) return;
+          var last = pts[pts.length - 1];
+          events.push({
+            kind: "event", cat: EV_COLORS[cat] ? cat : "other", title: e.title,
+            lng: last.coordinates[0], lat: last.coordinates[1], date: last.date,
+            mag: last.magnitudeValue, unit: last.magnitudeUnit, link: e.sources && e.sources[0] && e.sources[0].url
+          });
+          if (cat === "severeStorms" && pts.length > 1) {
+            stormPaths.push({ title: e.title, coords: pts.map(function (g) { return [g.coordinates[1], g.coordinates[0]]; }) });
+          }
+        });
+        counts.events = events.length;
+        pointData(); notify();
+      }).catch(function (e) { counts.events = null; console.warn("eonet", e); notify(); });
+  }
+  globe
+    .pathPoints("coords").pathPointLat(function (p) { return p[0]; }).pathPointLng(function (p) { return p[1]; })
+    .pathPointAlt(0.014)
+    .pathColor(function () { return ["rgba(255,92,240,0.15)", "rgba(255,92,240,0.95)"]; })
+    .pathStroke(1.6)
+    .pathDashLength(0.06).pathDashGap(0.03).pathDashAnimateTime(6000)
+    .pathLabel(function (p) { return '<div class="tip" dir="auto">' + esc(p.title) + "</div>"; });
+
   // ------------------------------------------------------------ dışa açık
   window.LiveLayers = {
-    ids: ["daynight", "planes", "milair", "sats", "quakes", "iss"],
+    ids: ["daynight", "planes", "planeInfo", "planeTrails", "milair", "sats", "quakes", "events", "iss"],
+    fleets: { planes: planes, milair: milair },
+    isOn: function (id) { return !!on[id]; },
     count: function (id) { return counts[id]; },
     set: function (id, v) {
       on[id] = v;
@@ -372,6 +431,12 @@
       if (id === "planes") planes.set(v);
       if (id === "milair") milair.set(v);
       if (id === "sats") setSats(v);
+      if ((id === "planeInfo" || id === "planeTrails" || id === "planes" || id === "milair") && window.FlightUI) window.FlightUI.update();
+      if (id === "events") {
+        clearInterval(eventTimer);
+        if (v) { loadEvents(); eventTimer = setInterval(loadEvents, 30 * 60000); }
+        pointData();
+      }
       if (id === "quakes") {
         clearInterval(quakeTimer);
         if (v) { loadQuakes(); quakeTimer = setInterval(loadQuakes, 5 * 60000); }

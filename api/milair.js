@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
       return res.status(502).json({ error: "adsb.lol " + r.status });
     }
     const j = await r.json();
-    // [lng, lat, irtifa ft→m, hız kt→m/s, yön °, çağrı adı, tip]
+    // [lng, lat, irtifa ft→m, hız kt→m/s, yön °, çağrı adı, tip, icao, dikey hız m/s, tescil]
     const out = [];
     for (const a of j.ac || []) {
       if (a.lat == null || a.lon == null || a.alt_baro === "ground") continue;
@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
       out.push([
         Math.round(a.lon * 1000) / 1000, Math.round(a.lat * 1000) / 1000,
         Math.round(alt * 0.3048), Math.round((a.gs || 0) * 0.5144 * 10) / 10, Math.round(a.track ?? a.true_heading ?? 0),
-        (a.flight || a.r || "").trim(), a.t || ""
+        (a.flight || a.r || "").trim(), a.t || "", a.hex || "", Math.round((a.geom_rate || a.baro_rate || 0) * 0.00508 * 10) / 10, a.r || ""
       ]);
     }
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=120");

@@ -13,9 +13,12 @@
     { id: "labels", key: "layerLabels", on: true },
     { id: "daynight", key: "layerDayNight", on: false, live: true },
     { id: "planes", key: "layerPlanes", on: false, live: true },
+    { id: "planeInfo", key: "layerPlaneInfo", on: true, live: true, sub: ["planes", "milair"] },
+    { id: "planeTrails", key: "layerPlaneTrails", on: false, live: true, sub: ["planes"] },
     { id: "milair", key: "layerMilAir", on: false, live: true },
     { id: "sats", key: "layerSats", on: false, live: true },
     { id: "quakes", key: "layerQuakes", on: false, live: true },
+    { id: "events", key: "layerEvents", on: false, live: true },
     { id: "iss", key: "layerISS", on: false, live: true },
     { id: "clouds", key: "layerClouds", on: false },
     { id: "precip", key: "layerPrecip", on: false },
@@ -46,12 +49,14 @@
   function renderPanel() {
     var h = "";
     LAYERS.forEach(function (l) {
+      // Alt seçenekler yalnızca ana katman açıkken görünür
+      if (l.sub && !l.sub.some(function (p) { return on[p]; })) return;
       var cnt = "";
-      if (l.live && on[l.id] && window.LiveLayers && l.id !== "daynight" && l.id !== "iss") {
+      if (l.live && !l.sub && on[l.id] && window.LiveLayers && l.id !== "daynight" && l.id !== "iss") {
         var n = window.LiveLayers.count(l.id);
         cnt = n === undefined ? "…" : n === null ? "!" : APP_fmt(n);
       }
-      h += '<label class="ly-row"><input type="checkbox" data-id="' + l.id + '"' + (on[l.id] ? " checked" : "") +
+      h += '<label class="ly-row' + (l.sub ? " ly-sub" : "") + '"><input type="checkbox" data-id="' + l.id + '"' + (on[l.id] ? " checked" : "") +
         "><span>" + esc(t(l.key)) + "</span>" + (cnt ? '<em class="ly-cnt">' + esc(cnt) + "</em>" : "") + "</label>";
       if (l.id === "sats" && on.sats) {
         h += '<div class="ly-scale ly-legend">' + [["#9fb4ff", "satStarlink"], ["#6dffb0", "satGnss"], ["#ffd36b", "satGeo"],
@@ -67,7 +72,7 @@
           "</span><span>" + esc(t("heavy")) + "</span></div></div>";
       }
     });
-    if (LAYERS.some(function (l) { return l.live && on[l.id] && l.id !== "daynight"; })) {
+    if (LAYERS.some(function (l) { return l.live && !l.sub && on[l.id] && l.id !== "daynight"; })) {
       h += '<div class="ly-src">' + esc(t("srcLive")) + "</div>";
     }
     if (wxActive()) {
@@ -385,7 +390,7 @@
   // ------------------------------------------------------------ açılış
   if (!THREE) {
     LAYERS = LAYERS.filter(function (l) { return ["scores", "military", "labels"].indexOf(l.id) >= 0; });
-    ["daynight", "planes", "milair", "sats", "quakes", "iss"].forEach(function (k) { on[k] = false; });
+    ["daynight", "planes", "planeInfo", "planeTrails", "milair", "sats", "quakes", "events", "iss"].forEach(function (k) { on[k] = false; });
     ["clouds", "precip", "temp", "wind"].forEach(function (k) { on[k] = false; });
   }
   if (MOBILE) document.getElementById("layers-box").removeAttribute("open");
@@ -399,6 +404,9 @@
     document.addEventListener("liveready", function () {
       window.LiveLayers.ids.forEach(function (id) { if (on[id]) window.LiveLayers.set(id, true); });
       renderPanel();
+      var fs = document.createElement("script");
+      fs.src = "flight.js";
+      document.body.appendChild(fs);
     });
     var ls = document.createElement("script");
     ls.src = "live.js";
