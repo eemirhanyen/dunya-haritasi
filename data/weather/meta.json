@@ -1,7 +1,7 @@
 {
  "source": "NOAA GFS 1.0\u00b0 (NOMADS)",
- "run": "2026-10-30T06:00:00Z",
- "generated_at": "2026-10-30T11:01:29+00:00",
+ "run": "2026-10-30T12:00:00Z",
+ "generated_at": "2026-10-30T21:02:03+00:00",
  "grid": {
   "w": 360,
   "h": 181,
@@ -33,47 +33,47 @@
  },
  "frames": [
   {
-   "time": "2026-10-30T06:00:00Z",
+   "time": "2026-10-30T12:00:00Z",
    "wind": "wind_f000.png",
    "sky": "sky_f000.png"
   },
   {
-   "time": "2026-10-30T09:00:00Z",
+   "time": "2026-10-30T15:00:00Z",
    "wind": "wind_f003.png",
    "sky": "sky_f003.png"
   },
   {
-   "time": "2026-10-30T12:00:00Z",
+   "time": "2026-10-30T18:00:00Z",
    "wind": "wind_f006.png",
    "sky": "sky_f006.png"
   },
   {
-   "time": "2026-10-30T15:00:00Z",
+   "time": "2026-10-30T21:00:00Z",
    "wind": "wind_f009.png",
    "sky": "sky_f009.png"
   },
   {
-   "time": "2026-10-30T18:00:00Z",
+   "time": "2026-10-31T00:00:00Z",
    "wind": "wind_f012.png",
    "sky": "sky_f012.png"
   },
   {
-   "time": "2026-10-30T21:00:00Z",
+   "time": "2026-10-31T03:00:00Z",
    "wind": "wind_f015.png",
    "sky": "sky_f015.png"
   },
   {
-   "time": "2026-10-31T00:00:00Z",
+   "time": "2026-10-31T06:00:00Z",
    "wind": "wind_f018.png",
    "sky": "sky_f018.png"
   },
   {
-   "time": "2026-10-31T03:00:00Z",
+   "time": "2026-10-31T09:00:00Z",
    "wind": "wind_f021.png",
    "sky": "sky_f021.png"
   },
   {
-   "time": "2026-10-31T06:00:00Z",
+   "time": "2026-10-31T12:00:00Z",
    "wind": "wind_f024.png",
    "sky": "sky_f024.png"
   }
